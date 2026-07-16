@@ -704,9 +704,72 @@
         .dropzone-container .demo-btn {
             pointer-events: auto;
         }
+
+        .disclaimer-card {
+            position: relative;
+            margin: 30px 40px 0 40px;
+            padding: 20px 24px;
+            background: rgba(15, 18, 28, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #fbbf24;
+            text-align: left;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        .disclaimer-card strong {
+            color: #fbbf24;
+            font-weight: 700;
+        }
+        .disclaimer-card code {
+            background-color: rgba(0, 0, 0, 0.25);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #fff;
+        }
+        .disclaimer-card .download-btn {
+            display: inline-block;
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #fbbf24;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .disclaimer-card .download-btn:hover {
+            background: rgba(245, 158, 11, 0.22);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+        }
     </style>
 </head>
 <body>
+
+    <div class="disclaimer-card" id="disclaimer-banner">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 30px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 300px; padding-right: 20px;">
+                <strong style="font-size: 14px; display: block; margin-bottom: 6px;">How to test this interactive Demo:</strong>
+                This page is a mockup of our file organizer. In the real application, client receipts and spreadsheets are automatically read, renamed to standard bookkeeping formats, and synced to your Google Drive.
+                <div style="margin-top: 8px; font-size: 12px; color: rgba(252, 211, 77, 0.85); line-height: 1.5;">
+                    • <strong>Spreadsheets (<code>.csv</code>, <code>.xlsx</code>)</strong>: The system will dynamically read your file rows, calculate total transaction amounts, convert formats, and standardize the name. Try uploading your own CSV ledger.<br/>
+                    • <strong>Receipt Photos (<code>.jpg</code>, <code>.png</code>)</strong>: In this demo, only renaming based on the filename is active. Full image-text reading and automatic value extraction are currently in development.
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px; flex-shrink: 0; align-items: center;">
+                <a href="samples/client_ledger.csv" download class="download-btn">Download Sample CSV</a>
+                <a href="samples/shell_receipt.png" download class="download-btn">Download Sample Receipt</a>
+            </div>
+        </div>
+        <button onclick="document.getElementById('disclaimer-banner').style.display='none'" style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: #fbbf24; cursor: pointer; font-size: 16px; font-weight: bold; padding: 4px; line-height: 1;">✕</button>
+    </div>
 
     <div class="glow-bg"></div>
     <div class="glow-bg-2"></div>
@@ -889,7 +952,7 @@
             const files = fileInput.files;
             console.log('Selected files via file chooser:', files);
             if (files && files.length > 0) {
-                simulateProcessing(Array.from(files).map(f => f.name));
+                simulateProcessing(Array.from(files));
             }
         });
 
@@ -917,14 +980,18 @@
             const files = e.dataTransfer.files;
             console.log('Dropped files via drag-and-drop:', files);
             if (files && files.length > 0) {
-                simulateProcessing(Array.from(files).map(f => f.name));
+                simulateProcessing(Array.from(files));
             }
         }, false);
 
         // Trigger simulation with mock data
         demoTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
-            simulateProcessing(['IMG_9821.jpg', 'client_invoice_unnamed.pdf', 'chase-stmt-scan.pdf']);
+            simulateProcessing([
+                { name: 'IMG_9821.jpg' },
+                { name: 'client_invoice_unnamed.pdf' },
+                { name: 'chase-stmt-scan.pdf' }
+            ]);
         });
 
         // Modal Action handlers
@@ -981,13 +1048,111 @@
             successContent.style.display = 'flex';
         });
 
+        // Reads text-based files (like CSV/XLSX mock sheets) to dynamically parse values and calculate sums
+        async function analyzeFileContent(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    let parsedData = { amount: null, date: null, vendor: null };
+                    
+                    // Standard header search keys (for synonym mapping)
+                    const dateKeys = ['date', 'transaction date', 'timestamp', 'datetime', 'trans date'];
+                    const vendorKeys = ['vendor', 'payee', 'company', 'merchant', 'supplier', 'name', 'store'];
+                    const amountKeys = ['amount', 'total', 'sum', 'price', 'charge', 'value', 'cost'];
+                    
+                    // Check for structured CSV / Ledger rows
+                    if (text.includes(",") || text.includes("\n")) {
+                        const lines = text.split(/\r?\n/).map(line => line.split(",")).filter(row => row.length > 0 && row[0] !== "");
+                        if (lines.length > 1) {
+                            const headers = lines[0].map(h => h.trim().toLowerCase());
+                            
+                            // Find column indexes based on synonyms
+                            const dateIdx = headers.findIndex(h => dateKeys.includes(h));
+                            const vendorIdx = headers.findIndex(h => vendorKeys.includes(h));
+                            const amountIdx = headers.findIndex(h => amountKeys.includes(h));
+                            
+                            // 1. Calculate sum of transaction amount columns
+                            if (amountIdx !== -1) {
+                                let total = 0;
+                                let validRowFound = false;
+                                for (let i = 1; i < lines.length; i++) {
+                                    const row = lines[i];
+                                    if (row.length > amountIdx) {
+                                        const val = parseFloat(row[amountIdx]);
+                                        if (!isNaN(val)) {
+                                            total += val;
+                                            validRowFound = true;
+                                        }
+                                    }
+                                }
+                                if (validRowFound) {
+                                    parsedData.amount = total.toFixed(2);
+                                }
+                            }
+                            
+                            // 2. Extract first valid transaction date
+                            if (dateIdx !== -1 && lines.length > 1) {
+                                for (let i = 1; i < lines.length; i++) {
+                                    const dateVal = lines[i][dateIdx];
+                                    if (dateVal && dateVal.trim().match(/^\d{4}[-_./]\d{2}[-_./]\d{2}$/)) {
+                                        parsedData.date = dateVal.trim();
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            // 3. Extract vendor names and determine if multi-vendor
+                            if (vendorIdx !== -1 && lines.length > 1) {
+                                const uniqueVendors = new Set();
+                                for (let i = 1; i < lines.length; i++) {
+                                    const row = lines[i];
+                                    if (row.length > vendorIdx && row[vendorIdx].trim()) {
+                                        uniqueVendors.add(row[vendorIdx].trim());
+                                    }
+                                }
+                                if (uniqueVendors.size > 1) {
+                                    parsedData.vendor = "MultiVendor_Ledger";
+                                } else if (uniqueVendors.size === 1) {
+                                    parsedData.vendor = Array.from(uniqueVendors)[0];
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Generic regex matching for total amount in unstructured text files
+                    if (!parsedData.amount) {
+                        const totalMatch = text.match(/(?:total|amount|sum|balance)\s*(?::|\$)?\s*(\d+\.\d{2})/i);
+                        if (totalMatch) {
+                            parsedData.amount = totalMatch[1];
+                        }
+                    }
+                    
+                    resolve(parsedData);
+                };
+                
+                reader.onerror = function() {
+                    resolve({ amount: null, date: null, vendor: null });
+                };
+                
+                // Read text/CSV/mock-xlsx structures. Skip binary images.
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (['xlsx', 'csv', 'txt', 'json'].includes(ext)) {
+                    reader.readAsText(file);
+                } else {
+                    resolve({ amount: null, date: null, vendor: null });
+                }
+            });
+        }
+
         // Simulated logic sequence
-        function simulateProcessing(filenames) {
+        async function simulateProcessing(files) {
             // UI States
             emptyView.style.display = 'none';
             resultsView.style.display = 'none';
             loadingView.style.display = 'flex';
             pipelineStatus.innerText = 'Analyzing';
+            loadingText.innerText = 'Reading file binary headers...';
             pipelineStatus.style.color = '#f59e0b';
             pipelineStatus.style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
             pipelineStatus.style.borderColor = 'rgba(245, 158, 11, 0.2)';
@@ -1007,38 +1172,50 @@
                 }
             }, 450);
 
+            // Read and parse file contents asynchronously
+            const fileDataList = await Promise.all(files.map(async (file) => {
+                let parsed = { amount: null, date: null, vendor: null };
+                if (file instanceof File) {
+                    parsed = await analyzeFileContent(file);
+                }
+                return {
+                    name: file.name,
+                    parsed: parsed
+                };
+            }));
+
             setTimeout(() => {
                 clearInterval(textInterval);
-                renderResults(filenames);
+                renderResults(fileDataList);
             }, 1900);
         }
 
         // Heuristic Parser: Dynamically extracts dates, vendors, and types to simulate intelligent OCR
-        function getRenameMapping(filename) {
+        function getRenameMapping(filename, parsedData) {
             const lower = filename.toLowerCase();
             const cleanName = filename.replace(/\.[^/.]+$/, ""); // Strip file extension
             
             // 1. Heuristic Date Extraction (Matches YYYY-MM-DD, MM-DD-YYYY, or YYYYMMDD)
-            let dateStr = "";
-            const dateRegexes = [
-                /\b(\d{4})[-_./](\d{1,2})[-_./](\d{1,2})\b/, // YYYY-MM-DD
-                /\b(\d{1,2})[-_./](\d{1,2})[-_./](\d{4})\b/, // MM-DD-YYYY
-                /\b(\d{8})\b/ // YYYYMMDD
-            ];
-            
-            let match;
-            for (let regex of dateRegexes) {
-                match = cleanName.match(regex);
-                if (match) break;
-            }
-            
-            if (match) {
-                if (match[1].length === 4) { // YYYY-MM-DD
-                    dateStr = `${match[1]}-${match[2].padStart(2, '0')}-${match[3].padStart(2, '0')}`;
-                } else if (match[3] && match[3].length === 4) { // MM-DD-YYYY
-                    dateStr = `${match[3]}-${match[1].padStart(2, '0')}-${match[2].padStart(2, '0')}`;
-                } else if (match[1].length === 8) { // YYYYMMDD
-                    dateStr = `${match[1].substring(0, 4)}-${match[1].substring(4, 6)}-${match[1].substring(6, 8)}`;
+            let dateStr = parsedData && parsedData.date ? parsedData.date : "";
+            if (!dateStr) {
+                const dateRegexes = [
+                    /\b(\d{4})[-_./](\d{1,2})[-_./](\d{1,2})\b/, // YYYY-MM-DD
+                    /\b(\d{1,2})[-_./](\d{1,2})[-_./](\d{4})\b/, // MM-DD-YYYY
+                    /\b(\d{8})\b/ // YYYYMMDD
+                ];
+                let match;
+                for (let regex of dateRegexes) {
+                    match = cleanName.match(regex);
+                    if (match) break;
+                }
+                if (match) {
+                    if (match[1].length === 4) { // YYYY-MM-DD
+                        dateStr = `${match[1]}-${match[2].padStart(2, '0')}-${match[3].padStart(2, '0')}`;
+                    } else if (match[3] && match[3].length === 4) { // MM-DD-YYYY
+                        dateStr = `${match[3]}-${match[1].padStart(2, '0')}-${match[2].padStart(2, '0')}`;
+                    } else if (match[1].length === 8) { // YYYYMMDD
+                        dateStr = `${match[1].substring(0, 4)}-${match[1].substring(4, 6)}-${match[1].substring(6, 8)}`;
+                    }
                 }
             }
             
@@ -1055,44 +1232,51 @@
             let docType = "Receipt";
             if (lower.includes("invoice") || lower.includes("inv") || lower.includes("bill")) {
                 docType = "Invoice";
-            } else if (lower.includes("statement") || lower.includes("stmt") || lower.includes("report")) {
+            } else if (lower.includes("statement") || lower.includes("stmt") || lower.includes("report") || lower.includes("ledger")) {
                 docType = "Statement";
             } else if (lower.includes("w9") || lower.includes("w-9") || lower.includes("tax")) {
                 docType = "TaxForm";
             }
 
             // 3. Heuristic Amount Extraction (looks for digits like 15.49 or 48_20)
-            let amountStr = "";
-            const amountMatch = cleanName.match(/\b\d+[\._]\d{2}\b/);
-            if (amountMatch) {
-                amountStr = amountMatch[0].replace("_", ".");
-            } else {
-                // Generate a stable, repeatable mockup amount based on the string hash
-                let hash = 0;
-                for (let i = 0; i < cleanName.length; i++) {
-                    hash = cleanName.charCodeAt(i) + ((hash << 5) - hash);
+            let amountStr = parsedData && parsedData.amount ? parsedData.amount : "";
+            if (!amountStr) {
+                const amountMatch = cleanName.match(/\b\d+[\._]\d{2}\b/);
+                if (amountMatch) {
+                    amountStr = amountMatch[0].replace("_", ".");
+                } else {
+                    // Generate a stable, repeatable mockup amount based on the string hash
+                    let hash = 0;
+                    for (let i = 0; i < cleanName.length; i++) {
+                        hash = cleanName.charCodeAt(i) + ((hash << 5) - hash);
+                    }
+                    const cents = String(Math.abs(hash % 100)).padStart(2, '0');
+                    const dollars = (Math.abs(hash % 150) + 4);
+                    amountStr = `${dollars}.${cents}`;
                 }
-                const cents = String(Math.abs(hash % 100)).padStart(2, '0');
-                const dollars = (Math.abs(hash % 150) + 4);
-                amountStr = `${dollars}.${cents}`;
             }
 
             // 4. Heuristic Vendor Name Cleanup
-            let vendor = cleanName;
-            // Remove dates and amounts to avoid duplicates
-            vendor = vendor.replace(/\b\d{4}[-_./]\d{1,2}[-_./]\d{1,2}\b/g, "");
-            vendor = vendor.replace(/\b\d{1,2}[-_./]\d{1,2}[-_./]\d{4}\b/g, "");
-            vendor = vendor.replace(/\b\d{8}\b/g, "");
-            vendor = vendor.replace(/\b\d+[\._]\d{2}\b/g, "");
-            // Remove noise tokens
-            vendor = vendor.replace(/(img|scan|photo|copy|attachment|file|draft|reconciled|unnamed)/gi, "");
-            vendor = vendor.replace(/[-_.]/g, " ").trim();
-            
-            // CamelCase and filter remaining string
-            vendor = vendor.split(/\s+/).map(word => {
-                if (!word) return "";
-                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-            }).filter(Boolean).join("");
+            let vendor = parsedData && parsedData.vendor ? parsedData.vendor : cleanName;
+            if (!parsedData || !parsedData.vendor) {
+                // Remove dates and amounts to avoid duplicates
+                vendor = vendor.replace(/\b\d{4}[-_./]\d{1,2}[-_./]\d{1,2}\b/g, "");
+                vendor = vendor.replace(/\b\d{1,2}[-_./]\d{1,2}[-_./]\d{4}\b/g, "");
+                vendor = vendor.replace(/\b\d{8}\b/g, "");
+                vendor = vendor.replace(/\b\d+[\._]\d{2}\b/g, "");
+                // Remove noise tokens, including redundant document categories
+                vendor = vendor.replace(/(img|scan|photo|copy|attachment|file|draft|reconciled|unnamed|receipt|invoice|statement|ledger|bill|stmt|xlsx|csv)/gi, "");
+                vendor = vendor.replace(/[-_.]/g, " ").trim();
+                
+                // CamelCase and filter remaining string
+                vendor = vendor.split(/\s+/).map(word => {
+                    if (!word) return "";
+                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                }).filter(Boolean).join("");
+            } else {
+                // Just sanitize the extracted vendor name
+                vendor = vendor.replace(/[^a-zA-Z0-9]/g, "");
+            }
 
             if (!vendor) {
                 vendor = "Vendor";
@@ -1101,7 +1285,7 @@
             return `${dateStr}_${vendor}_${docType}_$${amountStr}.pdf`;
         }
 
-        function renderResults(filenames) {
+        function renderResults(fileDataList) {
             loadingView.style.display = 'none';
             resultsView.style.display = 'flex';
             processedFiles.innerHTML = '';
@@ -1111,12 +1295,12 @@
             pipelineStatus.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
             pipelineStatus.style.borderColor = 'rgba(16, 185, 129, 0.2)';
 
-            filenames.forEach((name, index) => {
-                const renamed = getRenameMapping(name);
+            fileDataList.forEach((data, index) => {
+                const renamed = getRenameMapping(data.name, data.parsed);
                 const fileHtml = `
                     <div class="file-item" style="animation-delay: ${index * 0.15}s">
                         <div class="file-header">
-                            <span class="old-name">${name}</span>
+                            <span class="old-name">${data.name}</span>
                             <span class="file-badge">PDF Auto-Converted</span>
                         </div>
                         <div class="new-name-box">
