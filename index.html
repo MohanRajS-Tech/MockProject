@@ -765,7 +765,7 @@
             </div>
             <div style="display: flex; gap: 12px; flex-shrink: 0; align-items: center;">
                 <a href="samples/client_ledger.csv" download class="download-btn">Download Sample CSV</a>
-                <a href="samples/shell_receipt.png" download class="download-btn">Download Sample Receipt</a>
+                <a href="javascript:void(0)" onclick="forceDownload('samples/shell_receipt.png', 'shell_receipt.png')" class="download-btn">Download Sample Receipt</a>
             </div>
         </div>
         <button onclick="document.getElementById('disclaimer-banner').style.display='none'" style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: #fbbf24; cursor: pointer; font-size: 16px; font-weight: bold; padding: 4px; line-height: 1;">✕</button>
@@ -1056,73 +1056,94 @@
                     const text = e.target.result;
                     let parsedData = { amount: null, date: null, vendor: null };
                     
+                    // Remove UTF-8 BOM if present
+                    let cleanText = text;
+                    if (cleanText.charCodeAt(0) === 0xFEFF) {
+                        cleanText = cleanText.substring(1);
+                    }
+                    
                     // Standard header search keys (for synonym mapping)
                     const dateKeys = ['date', 'transaction date', 'timestamp', 'datetime', 'trans date'];
                     const vendorKeys = ['vendor', 'payee', 'company', 'merchant', 'supplier', 'name', 'store'];
                     const amountKeys = ['amount', 'total', 'sum', 'price', 'charge', 'value', 'cost'];
                     
-                    // Check for structured CSV / Ledger rows
-                    if (text.includes(",") || text.includes("\n")) {
-                        const lines = text.split(/\r?\n/).map(line => line.split(",")).filter(row => row.length > 0 && row[0] !== "");
-                        if (lines.length > 1) {
-                            const headers = lines[0].map(h => h.trim().toLowerCase());
-                            
-                            // Find column indexes based on synonyms
-                            const dateIdx = headers.findIndex(h => dateKeys.includes(h));
-                            const vendorIdx = headers.findIndex(h => vendorKeys.includes(h));
-                            const amountIdx = headers.findIndex(h => amountKeys.includes(h));
-                            
-                            // 1. Calculate sum of transaction amount columns
-                            if (amountIdx !== -1) {
-                                let total = 0;
-                                let validRowFound = false;
-                                for (let i = 1; i < lines.length; i++) {
-                                    const row = lines[i];
-                                    if (row.length > amountIdx) {
-                                        const val = parseFloat(row[amountIdx]);
-                                        if (!isNaN(val)) {
-                                            total += val;
-                                            validRowFound = true;
-                                        }
+                    // Split lines and filter out completely empty entries
+                    const rawLines = cleanText.split(/\r?\n/).map(line => line.trim()).filter(line => line !== "");
+                    
+                    if (rawLines.length > 1) {
+                        // Detect delimiter (comma, semicolon, or tab)
+                        const headerLine = rawLines[0];
+                        let delimiter = ",";
+                        if (headerLine.includes(";")) delimiter = ";";
+                        else if (headerLine.includes("\t")) delimiter = "\t";
+                        
+                        const lines = rawLines.map(line => line.split(delimiter));
+                        const headers = lines[0].map(h => h.replace(/['"]/g, '').trim().toLowerCase());
+                        
+                        // Find column indexes based on synonyms
+                        const dateIdx = headers.findIndex(h => dateKeys.includes(h));
+                        const vendorIdx = headers.findIndex(h => vendorKeys.includes(h));
+                        const amountIdx = headers.findIndex(h => amountKeys.includes(h));
+                        
+                        // 1. Calculate sum of transaction amount columns
+                        if (amountIdx !== -1) {
+                            let total = 0;
+                            let validRowFound = false;
+                            for (let i = 1; i < lines.length; i++) {
+                                const row = lines[i];
+                                if (row.length > amountIdx) {
+                                    const rawVal = row[amountIdx].replace(/['"]/g, '').trim();
+                                    // Strip currency symbols and whitespace, keep digits, decimal points, and signs
+                                    const cleanVal = rawVal.replace(/[^0-9.-]/g, '');
+                                    const val = parseFloat(cleanVal);
+                                    if (!isNaN(val)) {
+                                        total += val;
+                                        validRowFound = true;
                                     }
                                 }
-                                if (validRowFound) {
-                                    parsedData.amount = total.toFixed(2);
-                                }
                             }
-                            
-                            // 2. Extract first valid transaction date
-                            if (dateIdx !== -1 && lines.length > 1) {
-                                for (let i = 1; i < lines.length; i++) {
-                                    const dateVal = lines[i][dateIdx];
-                                    if (dateVal && dateVal.trim().match(/^\d{4}[-_./]\d{2}[-_./]\d{2}$/)) {
-                                        parsedData.date = dateVal.trim();
+                            if (validRowFound) {
+                                parsedData.amount = total.toFixed(2);
+                            }
+                        }
+                        
+                        // 2. Extract first valid transaction date
+                        if (dateIdx !== -1 && lines.length > 1) {
+                            for (let i = 1; i < lines.length; i++) {
+                                const row = lines[i];
+                                if (row.length > dateIdx) {
+                                    const dateVal = row[dateIdx].replace(/['"]/g, '').trim();
+                                    if (dateVal && dateVal.match(/^\d{4}[-_./]\d{2}[-_./]\d{2}$/)) {
+                                        parsedData.date = dateVal;
                                         break;
                                     }
                                 }
                             }
-                            
-                            // 3. Extract vendor names and determine if multi-vendor
-                            if (vendorIdx !== -1 && lines.length > 1) {
-                                const uniqueVendors = new Set();
-                                for (let i = 1; i < lines.length; i++) {
-                                    const row = lines[i];
-                                    if (row.length > vendorIdx && row[vendorIdx].trim()) {
-                                        uniqueVendors.add(row[vendorIdx].trim());
+                        }
+                        
+                        // 3. Extract vendor names and determine if multi-vendor
+                        if (vendorIdx !== -1 && lines.length > 1) {
+                            const uniqueVendors = new Set();
+                            for (let i = 1; i < lines.length; i++) {
+                                const row = lines[i];
+                                if (row.length > vendorIdx) {
+                                    const vendorVal = row[vendorIdx].replace(/['"]/g, '').trim();
+                                    if (vendorVal) {
+                                        uniqueVendors.add(vendorVal);
                                     }
                                 }
-                                if (uniqueVendors.size > 1) {
-                                    parsedData.vendor = "MultiVendor_Ledger";
-                                } else if (uniqueVendors.size === 1) {
-                                    parsedData.vendor = Array.from(uniqueVendors)[0];
-                                }
+                            }
+                            if (uniqueVendors.size > 1) {
+                                parsedData.vendor = "MultiVendor_Ledger";
+                            } else if (uniqueVendors.size === 1) {
+                                parsedData.vendor = Array.from(uniqueVendors)[0];
                             }
                         }
                     }
                     
                     // Generic regex matching for total amount in unstructured text files
                     if (!parsedData.amount) {
-                        const totalMatch = text.match(/(?:total|amount|sum|balance)\s*(?::|\$)?\s*(\d+\.\d{2})/i);
+                        const totalMatch = cleanText.match(/(?:total|amount|sum|balance)\s*(?::|\$)?\s*(\d+\.\d{2})/i);
                         if (totalMatch) {
                             parsedData.amount = totalMatch[1];
                         }
@@ -1313,6 +1334,41 @@
                 `;
                 processedFiles.insertAdjacentHTML('beforeend', fileHtml);
             });
+        }
+
+        // Bypasses browser security blocks on file:// protocol for downloads by using a temporary canvas stream
+        function forceDownload(url, filename) {
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.onload = function() {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    const dataURL = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.download = filename;
+                    link.href = dataURL;
+                    link.click();
+                } catch(e) {
+                    // Fallback to standard anchor navigation if canvas throws security/CORS errors on local FS
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = filename;
+                    link.target = '_blank';
+                    link.click();
+                }
+            };
+            img.onerror = function() {
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                link.target = '_blank';
+                link.click();
+            };
+            img.src = url;
         }
     </script>
 </body>
