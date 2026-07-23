@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Ingestion & Renaming Assistant | Prototype</title>
+    <title>LedgerDrop - Automated Document Renaming & Intake | Prototype</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -701,6 +701,19 @@
 
         /* Responsive Layout adjustments */
         @media (max-width: 960px) {
+            header {
+                flex-direction: column;
+                gap: 16px;
+                padding: 15px 20px;
+                text-align: center;
+            }
+
+            .header-actions {
+                justify-content: center;
+                flex-wrap: wrap;
+                width: 100%;
+            }
+
             main {
                 grid-template-columns: 1fr;
                 padding: 20px;
@@ -714,6 +727,14 @@
 
             .hero-desc {
                 margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-container {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
             }
         }
 
@@ -755,13 +776,20 @@
             color: #fff;
         }
 
-        .disclaimer-card .download-btn {
-            display: inline-block;
-            background: rgba(245, 158, 11, 0.12);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            color: #fbbf24;
-            padding: 8px 16px;
-            border-radius: 6px;
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .download-btn-csv {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #c7d2fe;
+            padding: 6px 14px;
+            border-radius: 8px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
@@ -769,10 +797,35 @@
             transition: all 0.2s ease;
         }
 
-        .disclaimer-card .download-btn:hover {
-            background: rgba(245, 158, 11, 0.22);
+        .download-btn-csv:hover {
+            background: rgba(99, 102, 241, 0.22);
+            border-color: rgba(99, 102, 241, 0.6);
+            color: #fff;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        .download-btn-receipt {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(20, 184, 166, 0.12);
+            border: 1px solid rgba(20, 184, 166, 0.4);
+            color: #99f6e4;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .download-btn-receipt:hover {
+            background: rgba(20, 184, 166, 0.22);
+            border-color: rgba(20, 184, 166, 0.6);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2);
         }
     </style>
 </head>
@@ -781,11 +834,11 @@
 
     <div class="disclaimer-card" id="disclaimer-banner">
         <div style="display: flex; justify-content: space-between; align-items: center; gap: 30px; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 300px; padding-right: 20px;">
+            <div style="flex: 1; min-width: 300px;">
                 <strong style="font-size: 14px; display: block; margin-bottom: 6px;">How to test this interactive
                     Demo:</strong>
-                This page is a mockup of our file organizer. In the real application, client receipts and spreadsheets
-                are automatically read, renamed to standard bookkeeping formats, and synced to your Google Drive.
+                                This page is an interactive validation sandbox for LedgerDrop. The production version automatically
+                parses client files, extracts transaction details, standardizes filenames to your bookkeeping schema, and routes them directly to your Google Drive or OneDrive.
                 <div style="margin-top: 8px; font-size: 12px; color: rgba(252, 211, 77, 0.85); line-height: 1.5;">
                     • <strong>Spreadsheets (<code>.csv</code>, <code>.xlsx</code>)</strong>: The system will dynamically
                     read your file rows, calculate total transaction amounts, convert formats, and standardize the name.
@@ -794,11 +847,6 @@
                     renaming based on the filename is active. Full image-text reading and automatic value extraction are
                     currently in development.
                 </div>
-            </div>
-            <div style="display: flex; gap: 12px; flex-shrink: 0; align-items: center;">
-                <a href="samples/client_ledger.csv" download class="download-btn">Download Sample CSV</a>
-                <a href="javascript:void(0)" onclick="forceDownload('samples/shell_receipt.png', 'shell_receipt.png')"
-                    class="download-btn">Download Sample Receipt</a>
             </div>
         </div>
         <button onclick="document.getElementById('disclaimer-banner').style.display='none'"
@@ -810,10 +858,24 @@
 
     <header>
         <div class="logo-container">
-            <div class="logo-icon">F</div>
-            <div class="logo-text">File Intake Assistant</div>
+            <div class="logo-icon">L</div>
+            <div class="logo-text">LedgerDrop</div>
+            <div class="status-badge">Validation Sandbox</div>
         </div>
-        <div class="status-badge">Validation Sandbox</div>
+        <div class="header-actions">
+            <a href="samples/client_ledger.csv" download class="download-btn-csv">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="margin-right: 6px; display: inline-block; vertical-align: -1px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"></path>
+                </svg>
+                Download Sample CSV
+            </a>
+            <a href="javascript:void(0)" onclick="forceDownload('samples/shell_receipt.png', 'shell_receipt.png')" class="download-btn-receipt">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="margin-right: 6px; display: inline-block; vertical-align: -1px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"></path>
+                </svg>
+                Download Sample Receipt
+            </a>
+        </div>
     </header>
 
     <main>
@@ -956,6 +1018,37 @@
         const EMAIL_ENTRY_ID = "entry.944497158";  // e.g. "entry.123456789"
         const INTEGRATIONS_ENTRY_ID = "entry.2142902546"; // e.g. "entry.987654321"
 
+        // Telemetry tracking configurations (saves to a second Google Sheet)
+        const TELEMETRY_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdvx87C5lYmXdEqzlMQX8n5TN5AEf6YBsvOK_up7tCpGqVg6A/formResponse";
+        const TELEMETRY_EVENT_ID = "entry.1218034351";
+        const TELEMETRY_REF_ID = "entry.1210874588";
+
+        // Extract referrer from URL parameters (e.g. ?ref=tessera)
+        const urlParams = new URLSearchParams(window.location.search);
+        const referrerSource = urlParams.get('ref') || 'direct';
+
+        // Log an interaction event to Google Sheets telemetry database
+        async function logTelemetry(eventType) {
+            if (!TELEMETRY_FORM_URL) return;
+            const payload = new URLSearchParams();
+            payload.append(TELEMETRY_EVENT_ID, eventType);
+            payload.append(TELEMETRY_REF_ID, referrerSource);
+            try {
+                await fetch(TELEMETRY_FORM_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: payload.toString()
+                });
+                console.log(`Telemetry event logged: ${eventType}`);
+            } catch (err) {
+                console.warn('Telemetry submission failed:', err);
+            }
+        }
+
+        // Fire initial page view event on load
+        logTelemetry('PAGE_VIEW');
+
         // Core Elements
         const dropzone = document.getElementById('dropzone');
         const demoTrigger = document.getElementById('demo-trigger');
@@ -1003,6 +1096,7 @@
             const files = fileInput.files;
             console.log('Selected files via file chooser:', files);
             if (files && files.length > 0) {
+                logTelemetry('FILE_UPLOAD');
                 simulateProcessing(Array.from(files));
             }
         });
@@ -1031,6 +1125,7 @@
             const files = e.dataTransfer.files;
             console.log('Dropped files via drag-and-drop:', files);
             if (files && files.length > 0) {
+                logTelemetry('FILE_UPLOAD');
                 simulateProcessing(Array.from(files));
             }
         }, false);
@@ -1038,6 +1133,7 @@
         // Trigger simulation with mock data
         demoTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
+            logTelemetry('DEMO_PLAY');
             simulateProcessing([
                 { name: 'IMG_9821.jpg' },
                 { name: 'client_invoice_unnamed.pdf' },
@@ -1046,8 +1142,8 @@
         });
 
         // Modal Action handlers
-        syncDriveBtn.addEventListener('click', () => openModal());
-        downloadZipBtn.addEventListener('click', () => openModal());
+        syncDriveBtn.addEventListener('click', () => openModal('SYNC_DRIVE_CLICK'));
+        downloadZipBtn.addEventListener('click', () => openModal('DOWNLOAD_ZIP_CLICK'));
         modalClose.addEventListener('click', () => closeModal());
 
         // Checkbox Helper
@@ -1057,8 +1153,9 @@
             element.classList.toggle('checked', checkbox.checked);
         }
 
-        function openModal() {
+        function openModal(triggerType) {
             leadModal.classList.add('active');
+            logTelemetry(triggerType || 'FORM_OPEN');
         }
 
         function closeModal() {
@@ -1086,19 +1183,23 @@
             emailField.style.borderColor = '';
 
             const selectedIntegrations = Array.from(document.querySelectorAll('input[name="integration"]:checked')).map(el => el.value);
+            const integrationsText = selectedIntegrations.join(', ') + ` [ref: ${referrerSource}]`;
 
             // Console logger for validation checking
             console.log('Validation Submission:', {
                 email: email,
-                integrations: selectedIntegrations,
+                integrations: integrationsText,
                 timestamp: new Date().toISOString()
             });
+
+            // Log submission telemetry
+            logTelemetry('LEAD_SUBMIT');
 
             // Submit payload to Google Sheets via Google Forms response endpoint
             if (GOOGLE_FORM_URL) {
                 const formData = new URLSearchParams();
                 formData.append(EMAIL_ENTRY_ID, email);
-                formData.append(INTEGRATIONS_ENTRY_ID, selectedIntegrations.join(', '));
+                formData.append(INTEGRATIONS_ENTRY_ID, integrationsText);
 
                 try {
                     await fetch(GOOGLE_FORM_URL, {
