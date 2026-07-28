@@ -837,8 +837,9 @@
             <div style="flex: 1; min-width: 300px;">
                 <strong style="font-size: 14px; display: block; margin-bottom: 6px;">How to test this interactive
                     Demo:</strong>
-                                This page is an interactive validation sandbox for LedgerDrop. The production version automatically
-                parses client files, extracts transaction details, standardizes filenames to your bookkeeping schema, and routes them directly to your Google Drive or OneDrive.
+                This page is an interactive validation sandbox for LedgerDrop. The production version automatically
+                parses client files, extracts transaction details, standardizes filenames to your bookkeeping schema,
+                and routes them directly to your Google Drive or OneDrive.
                 <div style="margin-top: 8px; font-size: 12px; color: rgba(252, 211, 77, 0.85); line-height: 1.5;">
                     • <strong>Spreadsheets (<code>.csv</code>, <code>.xlsx</code>)</strong>: The system will dynamically
                     read your file rows, calculate total transaction amounts, convert formats, and standardize the name.
@@ -864,14 +865,21 @@
         </div>
         <div class="header-actions">
             <a href="samples/client_ledger.csv" download class="download-btn-csv">
-                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="margin-right: 6px; display: inline-block; vertical-align: -1px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"></path>
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"
+                    style="margin-right: 6px; display: inline-block; vertical-align: -1px;">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3">
+                    </path>
                 </svg>
                 Download Sample CSV
             </a>
-            <a href="javascript:void(0)" onclick="forceDownload('samples/shell_receipt.png', 'shell_receipt.png')" class="download-btn-receipt">
-                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="margin-right: 6px; display: inline-block; vertical-align: -1px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"></path>
+            <a href="javascript:void(0)" onclick="forceDownload('samples/shell_receipt.png', 'shell_receipt.png')"
+                class="download-btn-receipt">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"
+                    style="margin-right: 6px; display: inline-block; vertical-align: -1px;">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3">
+                    </path>
                 </svg>
                 Download Sample Receipt
             </a>
@@ -1003,10 +1011,20 @@
             <div class="success-state" id="modal-success-content">
                 <div class="success-circle">✓</div>
                 <h3 class="modal-title">You're On the List!</h3>
-                <p class="modal-desc" style="margin-bottom: 0;">
-                    Thank you. We have saved your preferences. We will email you the ZIP download link and a private
-                    invitation key when the beta goes live.
+                <p class="modal-desc">
+                    Thank you! Your preferences have been saved. LedgerDrop is currently in private preview — we’ll notify you as soon as the automated Google Drive & ZIP sync goes live.
                 </p>
+
+                <!-- Post-Submission Feedback Prompt -->
+                <div class="feedback-box" style="margin-top: 16px; width: 100%; text-align: left;">
+                    <label class="form-label" for="feedback-field" style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px;">
+                        What is your biggest document bottleneck right now? (Optional)
+                    </label>
+                    <textarea id="feedback-field" rows="2" class="email-input" style="resize: none;" placeholder="e.g. Clients texting blurry receipts..."></textarea>
+                    <button class="action-btn btn-secondary" id="feedback-submit-btn" style="margin-top: 8px; width: 100%;">
+                        Send Feedback
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1022,6 +1040,7 @@
         const TELEMETRY_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdvx87C5lYmXdEqzlMQX8n5TN5AEf6YBsvOK_up7tCpGqVg6A/formResponse";
         const TELEMETRY_EVENT_ID = "entry.1218034351";
         const TELEMETRY_REF_ID = "entry.1210874588";
+        const FEEDBACK_ENTRY_ID = "entry.1894598882";
 
         // Extract referrer from URL parameters (e.g. ?ref=tessera)
         const urlParams = new URLSearchParams(window.location.search);
@@ -1169,6 +1188,13 @@
                     card.classList.remove('checked');
                     card.querySelector('input').checked = false;
                 });
+                const fbField = document.getElementById('feedback-field');
+                const fbBtn = document.getElementById('feedback-submit-btn');
+                if (fbField) fbField.value = '';
+                if (fbBtn) {
+                    fbBtn.innerText = 'Send Feedback';
+                    fbBtn.disabled = false;
+                }
             }, 300);
         }
 
@@ -1220,6 +1246,41 @@
             formContent.style.display = 'none';
             successContent.style.display = 'flex';
         });
+
+        // Post-submission optional feedback handler
+        const feedbackSubmitBtn = document.getElementById('feedback-submit-btn');
+        if (feedbackSubmitBtn) {
+            feedbackSubmitBtn.addEventListener('click', async () => {
+                const feedbackText = document.getElementById('feedback-field').value.trim();
+                const email = emailField.value.trim();
+                if (!feedbackText || !GOOGLE_FORM_URL) return;
+
+                feedbackSubmitBtn.disabled = true;
+                feedbackSubmitBtn.innerText = 'Sending...';
+
+                const feedbackData = new URLSearchParams();
+                feedbackData.append(EMAIL_ENTRY_ID, email || 'anonymous');
+                feedbackData.append(INTEGRATIONS_ENTRY_ID, `[FEEDBACK_UPDATE] ref: ${referrerSource}`);
+                if (typeof FEEDBACK_ENTRY_ID !== 'undefined' && FEEDBACK_ENTRY_ID) {
+                    feedbackData.append(FEEDBACK_ENTRY_ID, feedbackText);
+                }
+
+                try {
+                    await fetch(GOOGLE_FORM_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: feedbackData.toString()
+                    });
+                    console.log('Feedback successfully synced to Google Sheet.');
+                    feedbackSubmitBtn.innerText = 'Feedback Sent ✓';
+                } catch (err) {
+                    console.error('Error sending feedback:', err);
+                    feedbackSubmitBtn.disabled = false;
+                    feedbackSubmitBtn.innerText = 'Send Feedback';
+                }
+            });
+        }
 
         // Reads text-based files (like CSV/XLSX mock sheets) to dynamically parse values and calculate sums
         async function analyzeFileContent(file) {
