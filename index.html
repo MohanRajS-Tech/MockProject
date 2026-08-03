@@ -904,7 +904,7 @@
                     </svg>
                 </div>
                 <div class="dropzone-title">Click to Select or Drag Files Here</div>
-                <div class="dropzone-subtitle">Accepts PDFs, JPEGs, PNGs up to 20MB</div>
+                <div class="dropzone-subtitle">Accepts PDFs, JPEGs, PNGs, XLSX & CSV up to 20MB</div>
                 <button class="demo-btn" id="demo-trigger">Try with Demo Files</button>
             </div>
         </div>
@@ -1099,6 +1099,7 @@
         // Create a hidden file input element for direct file picking (failsafe for drag-and-drop security blocks)
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
+        fileInput.accept = '.pdf,.jpg,.jpeg,.png,.xlsx,.csv';
         fileInput.multiple = true;
         fileInput.style.display = 'none';
         document.body.appendChild(fileInput);
@@ -1450,6 +1451,33 @@
             const lower = filename.toLowerCase();
             const cleanName = filename.replace(/\.[^/.]+$/, ""); // Strip file extension
 
+            // Raw Upload Mock OCR Presets (Simulates Server-side OCR text extraction for physical image/PDF contents)
+            const ocrPresets = {
+                "img_0982": { date: "2025-05-14", vendor: "Shell", docType: "Receipt", amount: "48.20" },
+                "img_1043": { date: "2025-05-18", vendor: "Subway", docType: "Receipt", amount: "12.45" },
+                "photo_may_14_2025": { date: "2025-05-14", vendor: "Staples", docType: "Receipt", amount: "124.99" },
+                "dcim_00491": { date: "2025-05-18", vendor: "HomeDepot", docType: "Receipt", amount: "248.50" },
+                "screenshot_20250516": { date: "2025-05-16", vendor: "Merchant", docType: "Receipt", amount: "35.00" },
+                "attachment_1": { date: "2025-06-01", vendor: "AdobeSystems", docType: "Invoice", amount: "15.49" },
+                "invoice_download": { date: "2025-06-10", vendor: "AmazonWebServices", docType: "Invoice", amount: "145.20" },
+                "document": { date: "2025-06-15", vendor: "Microsoft365", docType: "Invoice", amount: "99.00" },
+                "bill_june": { date: "2025-06-12", vendor: "ATT", docType: "Invoice", amount: "89.99" },
+                "scan_doc_0412": { date: "2025-06-01", vendor: "ChaseBank", docType: "Statement", amount: "1450.00" },
+                "stmt_202506": { date: "2025-06-30", vendor: "ChaseCreditCard", docType: "Statement", amount: "3240.15" },
+                "w9_vendor": { date: "2025-01-15", vendor: "IRS", docType: "TaxForm_W9", amount: "" },
+                "scan_941_2025": { date: "2025-04-30", vendor: "IRS", docType: "TaxForm_941", amount: "" },
+                "unnamed_ledger": { date: "2025-05-14", vendor: "MultiVendor", docType: "Statement", amount: "98.69" },
+                "payroll_draft": { date: "2025-06-15", vendor: "Payroll", docType: "Journal", amount: "4500.00" },
+                "receipt_2025": { date: "2025-05-22", vendor: "Uber", docType: "Receipt", amount: "24.50" }
+            };
+
+            const presetKey = cleanName.toLowerCase();
+            if (ocrPresets[presetKey]) {
+                const p = ocrPresets[presetKey];
+                const amtFormatted = p.amount ? `_$${p.amount}` : '';
+                return `${p.date}_${p.vendor}_${p.docType}${amtFormatted}.pdf`;
+            }
+
             // 1. Heuristic Date Extraction (Matches YYYY-MM-DD, MM-DD-YYYY, or YYYYMMDD)
             let dateStr = parsedData && parsedData.date ? parsedData.date : "";
             if (!dateStr) {
@@ -1500,7 +1528,6 @@
                 if (amountMatch) {
                     amountStr = amountMatch[0].replace("_", ".");
                 } else {
-                    // Generate a stable, repeatable mockup amount based on the string hash
                     let hash = 0;
                     for (let i = 0; i < cleanName.length; i++) {
                         hash = cleanName.charCodeAt(i) + ((hash << 5) - hash);
@@ -1514,22 +1541,18 @@
             // 4. Heuristic Vendor Name Cleanup
             let vendor = parsedData && parsedData.vendor ? parsedData.vendor : cleanName;
             if (!parsedData || !parsedData.vendor) {
-                // Remove dates and amounts to avoid duplicates
                 vendor = vendor.replace(/\b\d{4}[-_./]\d{1,2}[-_./]\d{1,2}\b/g, "");
                 vendor = vendor.replace(/\b\d{1,2}[-_./]\d{1,2}[-_./]\d{4}\b/g, "");
                 vendor = vendor.replace(/\b\d{8}\b/g, "");
                 vendor = vendor.replace(/\b\d+[\._]\d{2}\b/g, "");
-                // Remove noise tokens, including redundant document categories
                 vendor = vendor.replace(/(img|scan|photo|copy|attachment|file|draft|reconciled|unnamed|receipt|invoice|statement|ledger|bill|stmt|xlsx|csv)/gi, "");
                 vendor = vendor.replace(/[-_.]/g, " ").trim();
 
-                // CamelCase and filter remaining string
                 vendor = vendor.split(/\s+/).map(word => {
                     if (!word) return "";
                     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
                 }).filter(Boolean).join("");
             } else {
-                // Just sanitize the extracted vendor name
                 vendor = vendor.replace(/[^a-zA-Z0-9]/g, "");
             }
 
@@ -1552,11 +1575,17 @@
 
             fileDataList.forEach((data, index) => {
                 const renamed = getRenameMapping(data.name, data.parsed);
+                const ext = data.name.split('.').pop().toLowerCase();
+                const badgeText = ext === 'pdf' ? 'Renamed & Classified' : 'Converted to PDF';
+                const badgeStyle = ext === 'pdf' 
+                    ? 'color: #60a5fa; background-color: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.2);' 
+                    : 'color: #10b981; background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2);';
+
                 const fileHtml = `
                     <div class="file-item" style="animation-delay: ${index * 0.15}s">
                         <div class="file-header">
                             <span class="old-name">${data.name}</span>
-                            <span class="file-badge">PDF Auto-Converted</span>
+                            <span class="file-badge" style="${badgeStyle}">${badgeText}</span>
                         </div>
                         <div class="new-name-box">
                             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
