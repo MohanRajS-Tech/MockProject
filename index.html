@@ -266,6 +266,351 @@
             box-shadow: 0 4px 15px var(--primary-glow);
         }
 
+        /* Visual Demo Showcase Card */
+        .demo-visual-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(8px);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .visual-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .visual-badge {
+            font-size: 11px;
+            font-weight: 600;
+            color: #2dd4bf;
+            background: rgba(20, 184, 166, 0.12);
+            border: 1px solid rgba(20, 184, 166, 0.3);
+            padding: 4px 10px;
+            border-radius: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .visual-subtext {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .transformation-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: rgba(11, 15, 25, 0.5);
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .raw-file-box, .renamed-file-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 10px;
+            min-width: 0;
+        }
+
+        .renamed-file-box {
+            border-color: rgba(20, 184, 166, 0.25);
+            background: rgba(20, 184, 166, 0.03);
+        }
+
+        .file-icon-thumb {
+            font-size: 18px;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .thumb-success {
+            background: rgba(20, 184, 166, 0.15);
+        }
+
+        .file-info-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .file-name-raw, .file-name-clean {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-name-raw {
+            color: #f87171;
+        }
+
+        .file-name-clean {
+            color: #34d399;
+        }
+
+        .file-status-tag {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .tag-raw { color: #ef4444; }
+        .tag-clean { color: #10b981; }
+
+        .transform-arrow {
+            color: var(--accent-teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            animation: pulse-arrow 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-arrow {
+            0%, 100% { transform: translateX(0); opacity: 0.8; }
+            50% { transform: translateX(4px); opacity: 1; }
+        }
+
+        /* Interactive Video Simulation Frame */
+        .video-sim-container {
+            background: #0d1322;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            min-height: 280px;
+        }
+
+        .sim-titlebar {
+            background: #151d30;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .sim-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .sim-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ef4444; }
+        .dot-yellow { background: #f59e0b; }
+        .dot-green { background: #10b981; }
+
+        .sim-title-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        .sim-body {
+            padding: 16px;
+            position: relative;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .sim-dropzone {
+            border: 2px dashed rgba(99, 102, 241, 0.35);
+            border-radius: 10px;
+            padding: 24px 16px;
+            text-align: center;
+            background: rgba(22, 30, 49, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .sim-dropzone.active {
+            border-color: var(--accent-teal);
+            background: rgba(20, 184, 166, 0.1);
+        }
+
+        .sim-btn {
+            background: var(--primary);
+            color: #fff;
+            padding: 6px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 6px;
+            border: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        /* File Manager Overlay */
+        .sim-file-manager {
+            position: absolute;
+            inset: 12px;
+            background: #192238;
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: none;
+            flex-direction: column;
+            z-index: 10;
+            overflow: hidden;
+            animation: fadeInModal 0.3s ease;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .fm-header {
+            background: #111728;
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #a5b4fc;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .fm-file-list {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-grow: 1;
+        }
+
+        .fm-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.02);
+            font-size: 11px;
+            font-family: var(--font-mono);
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .fm-row.selected {
+            background: rgba(99, 102, 241, 0.25);
+            border: 1px solid rgba(99, 102, 241, 0.5);
+            color: #fff;
+        }
+
+        .fm-actions {
+            padding: 8px 12px;
+            background: #111728;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .fm-btn-open {
+            background: var(--accent-teal);
+            color: #0b0f19;
+            font-weight: 700;
+            padding: 4px 12px;
+            font-size: 11px;
+            border-radius: 4px;
+            border: none;
+        }
+
+        /* Cursor Animation */
+        .sim-cursor {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            z-index: 20;
+            pointer-events: none;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+
+        .sim-cursor.clicking {
+            transform: scale(0.85);
+        }
+
+        /* Processing State */
+        .sim-processing {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .sim-spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(20, 184, 166, 0.2);
+            border-top-color: var(--accent-teal);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Output Results State */
+        .sim-results {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .sim-result-card {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+            animation: highlightPulse 1s ease;
+        }
+
+        @keyframes highlightPulse {
+            0% { transform: scale(0.98); background: rgba(16, 185, 129, 0.25); }
+            100% { transform: scale(1); background: rgba(16, 185, 129, 0.08); }
+        }
+
         /* Right Panel - Processing & Results */
         .right-panel {
             background-color: var(--card-bg);
@@ -887,14 +1232,109 @@
     </header>
 
     <main>
-        <!-- Left Panel: Introduction and Dropzone -->
+        <!-- Left Panel: Introduction and Visual Demo -->
         <div class="left-panel">
             <h1 class="hero-title">Stop renaming client files <span>manually.</span></h1>
             <p class="hero-desc">
-                Boutique bookkeepers waste hours renaming client receipt photos and statements. Select or drag your
-                unstructured files below to test how our AI organizes and renames them to standard formats in seconds.
+                Boutique bookkeepers waste hours renaming client receipt photos and statements. Test how our AI organizes and renames them to standard formats in seconds.
             </p>
 
+            <!-- Visual Feature Showcase Card: Interactive Mini Video Demo -->
+            <div class="demo-visual-card">
+                <div class="visual-card-header">
+                    <span class="visual-badge">⚡ Smart Document Renaming</span>
+                    <span class="visual-subtext">Zero Manual Data Entry</span>
+                </div>
+                
+                <div class="video-sim-container" id="sim-frame">
+                    <div class="sim-titlebar">
+                        <div class="sim-dots">
+                            <span class="sim-dot dot-red"></span>
+                            <span class="sim-dot dot-yellow"></span>
+                            <span class="sim-dot dot-green"></span>
+                        </div>
+                        <span class="sim-title-text">LedgerDrop Intake &bull; raw_client_uploads/</span>
+                        <span></span>
+                    </div>
+
+                    <div class="sim-body" id="sim-body">
+                        <!-- Animated Cursor Pointer -->
+                        <svg class="sim-cursor" id="sim-cursor" viewBox="0 0 24 24" fill="#6366f1" stroke="#ffffff" stroke-width="1.5" style="top: 75%; left: 75%;">
+                            <path d="M3 3l7 18 3-7 7-3L3 3z"/>
+                        </svg>
+
+                        <!-- Idle Dropzone State -->
+                        <div class="sim-dropzone" id="sim-dz-view">
+                            <div style="font-size: 24px; margin-bottom: 6px;">📥</div>
+                            <div style="font-size: 12px; font-weight: 600; color: #fff;">Click to Select or Drag Files</div>
+                            <div style="font-size: 10px; color: var(--text-muted);">Accepts PDFs, JPEGs, PNGs up to 20MB</div>
+                            <button class="sim-btn" id="sim-select-btn">Select Files</button>
+                        </div>
+
+                        <!-- Simulated File Manager Modal -->
+                        <div class="sim-file-manager" id="sim-fm-modal">
+                            <div class="fm-header">
+                                <span>📁 File Explorer &bull; raw_client_uploads/</span>
+                                <span>5 Files</span>
+                            </div>
+                            <div class="fm-file-list" style="overflow-y: auto; max-height: 140px;">
+                                <div class="fm-row" id="fm-row-1">
+                                    <span>📄</span> <span>DCIM_00491.jpg</span> <span style="margin-left:auto; font-size:9px;">94 KB</span>
+                                </div>
+                                <div class="fm-row" id="fm-row-2">
+                                    <span>🧾</span> <span>IMG_0982.png</span> <span style="margin-left:auto; font-size:9px;">773 KB</span>
+                                </div>
+                                <div class="fm-row" id="fm-row-3">
+                                    <span>📄</span> <span>Scan_941_2025.pdf</span> <span style="margin-left:auto; font-size:9px;">77 KB</span>
+                                </div>
+                                <div class="fm-row" id="fm-row-4">
+                                    <span>📷</span> <span>Photo_May_14_2025.jpg</span> <span style="margin-left:auto; font-size:9px;">86 KB</span>
+                                </div>
+                                <div class="fm-row" id="fm-row-5">
+                                    <span>📊</span> <span>unnamed_ledger.xlsx</span> <span style="margin-left:auto; font-size:9px;">222 KB</span>
+                                </div>
+                            </div>
+                            <div class="fm-actions">
+                                <button class="fm-btn-open" id="fm-open-btn">Open Selected (2)</button>
+                            </div>
+                        </div>
+
+                        <!-- Processing Spinner State -->
+                        <div class="sim-processing" id="sim-proc-view">
+                            <div class="sim-spinner"></div>
+                            <div style="font-size: 11px; color: var(--accent-teal); font-weight: 600;" id="sim-proc-text">Reading binary headers...</div>
+                        </div>
+
+                        <!-- Highlighted Renamed Output State -->
+                        <div class="sim-results" id="sim-res-view">
+                            <div class="sim-result-card">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="font-size:16px;">📄</span>
+                                    <div style="display:flex; flex-direction:column;">
+                                        <span style="font-family:var(--font-mono); font-size:11px; font-weight:700; color:#34d399;">2026-08-06_Shell_USD_42.50.pdf</span>
+                                        <span style="font-size:9px; color:#10b981;">Standardized Ledger Format</span>
+                                    </div>
+                                </div>
+                                <span style="font-size:9px; background:rgba(16,185,129,0.2); color:#34d399; padding:2px 6px; border-radius:4px; font-weight:600;">Auto-Renamed</span>
+                            </div>
+                            <div class="sim-result-card" style="animation-delay: 0.2s;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="font-size:16px;">📄</span>
+                                    <div style="display:flex; flex-direction:column;">
+                                        <span style="font-family:var(--font-mono); font-size:11px; font-weight:700; color:#34d399;">2026-05-14_Staples_USD_124.99.pdf</span>
+                                        <span style="font-size:9px; color:#10b981;">Standardized Ledger Format</span>
+                                    </div>
+                                </div>
+                                <span style="font-size:9px; background:rgba(16,185,129,0.2); color:#34d399; padding:2px 6px; border-radius:4px; font-weight:600;">Auto-Renamed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Dropzone & Result Pipeline -->
+        <div class="right-panel">
             <div class="dropzone-container" id="dropzone">
                 <div class="upload-icon">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -907,11 +1347,8 @@
                 <div class="dropzone-subtitle">Accepts PDFs, JPEGs, PNGs, XLSX & CSV up to 20MB</div>
                 <button class="demo-btn" id="demo-trigger">Try with Demo Files</button>
             </div>
-        </div>
 
-        <!-- Right Panel: Result Panel -->
-        <div class="right-panel">
-            <div class="panel-header">
+            <div class="panel-header" style="margin-top: 24px;">
                 <div class="panel-title">Processed Document Pipeline</div>
                 <div class="status-badge"
                     style="background-color:rgba(20,184,166,0.1); color:#2dd4bf; border-color:rgba(20,184,166,0.2);"
@@ -1633,6 +2070,104 @@
             };
             img.src = url;
         }
+
+        // Mini Video Simulation Controller
+        (function initVideoSimulation() {
+            const cursor = document.getElementById('sim-cursor');
+            const dzView = document.getElementById('sim-dz-view');
+            const fmModal = document.getElementById('sim-fm-modal');
+            const procView = document.getElementById('sim-proc-view');
+            const procText = document.getElementById('sim-proc-text');
+            const resView = document.getElementById('sim-res-view');
+            const row2 = document.getElementById('fm-row-2');
+            const row3 = document.getElementById('fm-row-3');
+
+            if (!cursor || !dzView || !fmModal) return;
+
+            function runSimulationCycle() {
+                // Reset State
+                cursor.style.top = '75%';
+                cursor.style.left = '75%';
+                cursor.classList.remove('clicking');
+                dzView.style.display = 'block';
+                fmModal.style.display = 'none';
+                procView.style.display = 'none';
+                resView.style.display = 'none';
+                if (row2) row2.classList.remove('selected');
+                if (row3) row3.classList.remove('selected');
+
+                // Step 1: Move Cursor to "Select Files" button (0.8s)
+                setTimeout(() => {
+                    cursor.style.top = '58%';
+                    cursor.style.left = '52%';
+                }, 800);
+
+                // Step 2: Click button -> open File Manager Modal (1.6s)
+                setTimeout(() => {
+                    cursor.classList.add('clicking');
+                }, 1600);
+
+                setTimeout(() => {
+                    cursor.classList.remove('clicking');
+                    fmModal.style.display = 'flex';
+                    // Move cursor into modal
+                    cursor.style.top = '40%';
+                    cursor.style.left = '45%';
+                }, 1900);
+
+                // Step 3: Select raw files in modal (2.7s - 3.5s)
+                setTimeout(() => {
+                    cursor.classList.add('clicking');
+                    if (row2) row2.classList.add('selected');
+                }, 2700);
+
+                setTimeout(() => {
+                    cursor.classList.remove('clicking');
+                    cursor.style.top = '54%';
+                }, 3100);
+
+                setTimeout(() => {
+                    cursor.classList.add('clicking');
+                    if (row3) row3.classList.add('selected');
+                }, 3500);
+
+                // Step 4: Move cursor to "Open Selected" button and click (4.2s)
+                setTimeout(() => {
+                    cursor.classList.remove('clicking');
+                    cursor.style.top = '88%';
+                    cursor.style.left = '78%';
+                }, 4200);
+
+                setTimeout(() => {
+                    cursor.classList.add('clicking');
+                }, 4800);
+
+                // Step 5: Close Modal -> Show Processing (5.1s)
+                setTimeout(() => {
+                    cursor.classList.remove('clicking');
+                    fmModal.style.display = 'none';
+                    dzView.style.display = 'none';
+                    procView.style.display = 'flex';
+                    if (procText) procText.innerText = 'Reading binary headers...';
+                }, 5100);
+
+                setTimeout(() => {
+                    if (procText) procText.innerText = 'Applying vertical taxonomy renaming...';
+                }, 6000);
+
+                // Step 6: Show Green Highlighted Results (6.8s)
+                setTimeout(() => {
+                    procView.style.display = 'none';
+                    resView.style.display = 'flex';
+                    cursor.style.top = '75%';
+                    cursor.style.left = '75%';
+                }, 6800);
+            }
+
+            // Start loop and repeat every 10 seconds
+            runSimulationCycle();
+            setInterval(runSimulationCycle, 10000);
+        })();
     </script>
 </body>
 
