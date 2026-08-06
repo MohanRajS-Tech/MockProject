@@ -317,7 +317,8 @@
             border: 1px solid rgba(255, 255, 255, 0.04);
         }
 
-        .raw-file-box, .renamed-file-box {
+        .raw-file-box,
+        .renamed-file-box {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -357,7 +358,8 @@
             min-width: 0;
         }
 
-        .file-name-raw, .file-name-clean {
+        .file-name-raw,
+        .file-name-clean {
             font-family: var(--font-mono);
             font-size: 11px;
             font-weight: 500;
@@ -379,8 +381,13 @@
             color: var(--text-muted);
         }
 
-        .tag-raw { color: #ef4444; }
-        .tag-clean { color: #10b981; }
+        .tag-raw {
+            color: #ef4444;
+        }
+
+        .tag-clean {
+            color: #10b981;
+        }
 
         .transform-arrow {
             color: var(--accent-teal);
@@ -392,8 +399,17 @@
         }
 
         @keyframes pulse-arrow {
-            0%, 100% { transform: translateX(0); opacity: 0.8; }
-            50% { transform: translateX(4px); opacity: 1; }
+
+            0%,
+            100% {
+                transform: translateX(0);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: translateX(4px);
+                opacity: 1;
+            }
         }
 
         /* Interactive Video Simulation Frame */
@@ -429,9 +445,17 @@
             border-radius: 50%;
         }
 
-        .dot-red { background: #ef4444; }
-        .dot-yellow { background: #f59e0b; }
-        .dot-green { background: #10b981; }
+        .dot-red {
+            background: #ef4444;
+        }
+
+        .dot-yellow {
+            background: #f59e0b;
+        }
+
+        .dot-green {
+            background: #10b981;
+        }
 
         .sim-title-text {
             font-size: 11px;
@@ -490,8 +514,15 @@
         }
 
         @keyframes fadeInModal {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .fm-header {
@@ -558,7 +589,7 @@
             z-index: 20;
             pointer-events: none;
             transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
         }
 
         .sim-cursor.clicking {
@@ -584,7 +615,11 @@
             animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         /* Output Results State */
         .sim-results {
@@ -607,8 +642,15 @@
         }
 
         @keyframes highlightPulse {
-            0% { transform: scale(0.98); background: rgba(16, 185, 129, 0.25); }
-            100% { transform: scale(1); background: rgba(16, 185, 129, 0.08); }
+            0% {
+                transform: scale(0.98);
+                background: rgba(16, 185, 129, 0.25);
+            }
+
+            100% {
+                transform: scale(1);
+                background: rgba(16, 185, 129, 0.08);
+            }
         }
 
         /* Right Panel - Processing & Results */
@@ -1236,7 +1278,8 @@
         <div class="left-panel">
             <h1 class="hero-title">Stop renaming client files <span>manually.</span></h1>
             <p class="hero-desc">
-                Boutique bookkeepers waste hours renaming client receipt photos and statements. Test how our AI organizes and renames them to standard formats in seconds.
+                Boutique bookkeepers waste hours renaming client receipt photos and statements. Test how our AI
+                organizes and renames them to standard formats in seconds.
             </p>
 
             <!-- Visual Feature Showcase Card: Interactive Mini Video Demo -->
@@ -1245,7 +1288,7 @@
                     <span class="visual-badge">⚡ Smart Document Renaming</span>
                     <span class="visual-subtext">Zero Manual Data Entry</span>
                 </div>
-                
+
                 <div class="video-sim-container" id="sim-frame">
                     <div class="sim-titlebar">
                         <div class="sim-dots">
@@ -1259,15 +1302,18 @@
 
                     <div class="sim-body" id="sim-body">
                         <!-- Animated Cursor Pointer -->
-                        <svg class="sim-cursor" id="sim-cursor" viewBox="0 0 24 24" fill="#6366f1" stroke="#ffffff" stroke-width="1.5" style="top: 75%; left: 75%;">
-                            <path d="M3 3l7 18 3-7 7-3L3 3z"/>
+                        <svg class="sim-cursor" id="sim-cursor" viewBox="0 0 24 24" fill="#6366f1" stroke="#ffffff"
+                            stroke-width="1.5" style="top: 75%; left: 75%;">
+                            <path d="M3 3l7 18 3-7 7-3L3 3z" />
                         </svg>
 
                         <!-- Idle Dropzone State -->
                         <div class="sim-dropzone" id="sim-dz-view">
                             <div style="font-size: 24px; margin-bottom: 6px;">📥</div>
-                            <div style="font-size: 12px; font-weight: 600; color: #fff;">Click to Select or Drag Files</div>
-                            <div style="font-size: 10px; color: var(--text-muted);">Accepts PDFs, JPEGs, PNGs up to 20MB</div>
+                            <div style="font-size: 12px; font-weight: 600; color: #fff;">Click to Select or Drag Files
+                            </div>
+                            <div style="font-size: 10px; color: var(--text-muted);">Accepts PDFs, JPEGs, PNGs up to 20MB
+                            </div>
                             <button class="sim-btn" id="sim-select-btn">Select Files</button>
                         </div>
 
@@ -1279,19 +1325,24 @@
                             </div>
                             <div class="fm-file-list" style="overflow-y: auto; max-height: 140px;">
                                 <div class="fm-row" id="fm-row-1">
-                                    <span>📄</span> <span>DCIM_00491.jpg</span> <span style="margin-left:auto; font-size:9px;">94 KB</span>
+                                    <span>📄</span> <span>DCIM_00491.jpg</span> <span
+                                        style="margin-left:auto; font-size:9px;">94 KB</span>
                                 </div>
                                 <div class="fm-row" id="fm-row-2">
-                                    <span>🧾</span> <span>IMG_0982.png</span> <span style="margin-left:auto; font-size:9px;">773 KB</span>
+                                    <span>🧾</span> <span>IMG_0982.png</span> <span
+                                        style="margin-left:auto; font-size:9px;">773 KB</span>
                                 </div>
                                 <div class="fm-row" id="fm-row-3">
-                                    <span>📄</span> <span>Scan_941_2025.pdf</span> <span style="margin-left:auto; font-size:9px;">77 KB</span>
+                                    <span>📄</span> <span>Scan_941_2025.pdf</span> <span
+                                        style="margin-left:auto; font-size:9px;">77 KB</span>
                                 </div>
                                 <div class="fm-row" id="fm-row-4">
-                                    <span>📷</span> <span>Photo_May_14_2025.jpg</span> <span style="margin-left:auto; font-size:9px;">86 KB</span>
+                                    <span>📷</span> <span>Photo_May_14_2025.jpg</span> <span
+                                        style="margin-left:auto; font-size:9px;">86 KB</span>
                                 </div>
                                 <div class="fm-row" id="fm-row-5">
-                                    <span>📊</span> <span>unnamed_ledger.xlsx</span> <span style="margin-left:auto; font-size:9px;">222 KB</span>
+                                    <span>📊</span> <span>unnamed_ledger.xlsx</span> <span
+                                        style="margin-left:auto; font-size:9px;">222 KB</span>
                                 </div>
                             </div>
                             <div class="fm-actions">
@@ -1302,7 +1353,8 @@
                         <!-- Processing Spinner State -->
                         <div class="sim-processing" id="sim-proc-view">
                             <div class="sim-spinner"></div>
-                            <div style="font-size: 11px; color: var(--accent-teal); font-weight: 600;" id="sim-proc-text">Reading binary headers...</div>
+                            <div style="font-size: 11px; color: var(--accent-teal); font-weight: 600;"
+                                id="sim-proc-text">Reading binary headers...</div>
                         </div>
 
                         <!-- Highlighted Renamed Output State -->
@@ -1311,21 +1363,25 @@
                                 <div style="display:flex; align-items:center; gap:8px;">
                                     <span style="font-size:16px;">📄</span>
                                     <div style="display:flex; flex-direction:column;">
-                                        <span style="font-family:var(--font-mono); font-size:11px; font-weight:700; color:#34d399;">2026-08-06_Shell_USD_42.50.pdf</span>
+                                        <span
+                                            style="font-family:var(--font-mono); font-size:11px; font-weight:700; color:#34d399;">2026-08-06_Shell_USD_42.50.pdf</span>
                                         <span style="font-size:9px; color:#10b981;">Standardized Ledger Format</span>
                                     </div>
                                 </div>
-                                <span style="font-size:9px; background:rgba(16,185,129,0.2); color:#34d399; padding:2px 6px; border-radius:4px; font-weight:600;">Auto-Renamed</span>
+                                <span
+                                    style="font-size:9px; background:rgba(16,185,129,0.2); color:#34d399; padding:2px 6px; border-radius:4px; font-weight:600;">Auto-Renamed</span>
                             </div>
                             <div class="sim-result-card" style="animation-delay: 0.2s;">
                                 <div style="display:flex; align-items:center; gap:8px;">
                                     <span style="font-size:16px;">📄</span>
                                     <div style="display:flex; flex-direction:column;">
-                                        <span style="font-family:var(--font-mono); font-size:11px; font-weight:700; color:#34d399;">2026-05-14_Staples_USD_124.99.pdf</span>
+                                        <span
+                                            style="font-family:var(--font-mono); font-size:11px; font-weight:700; color:#34d399;">2026-05-14_Staples_USD_124.99.pdf</span>
                                         <span style="font-size:9px; color:#10b981;">Standardized Ledger Format</span>
                                     </div>
                                 </div>
-                                <span style="font-size:9px; background:rgba(16,185,129,0.2); color:#34d399; padding:2px 6px; border-radius:4px; font-weight:600;">Auto-Renamed</span>
+                                <span
+                                    style="font-size:9px; background:rgba(16,185,129,0.2); color:#34d399; padding:2px 6px; border-radius:4px; font-weight:600;">Auto-Renamed</span>
                             </div>
                         </div>
                     </div>
@@ -1449,16 +1505,20 @@
                 <div class="success-circle">✓</div>
                 <h3 class="modal-title">You're On the List!</h3>
                 <p class="modal-desc">
-                    Thank you! Your preferences have been saved. LedgerDrop is currently in private preview — we’ll notify you as soon as the automated Google Drive & ZIP sync goes live.
+                    Thank you! Your preferences have been saved. LedgerDrop is currently in private preview — we’ll
+                    notify you as soon as the automated Google Drive & ZIP sync goes live.
                 </p>
 
                 <!-- Post-Submission Feedback Prompt -->
                 <div class="feedback-box" style="margin-top: 16px; width: 100%; text-align: left;">
-                    <label class="form-label" for="feedback-field" style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px;">
+                    <label class="form-label" for="feedback-field"
+                        style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px;">
                         What is your biggest document bottleneck right now? (Optional)
                     </label>
-                    <textarea id="feedback-field" rows="2" class="email-input" style="resize: none;" placeholder="e.g. Clients texting blurry receipts..."></textarea>
-                    <button class="action-btn btn-secondary" id="feedback-submit-btn" style="margin-top: 8px; width: 100%;">
+                    <textarea id="feedback-field" rows="2" class="email-input" style="resize: none;"
+                        placeholder="e.g. Clients texting blurry receipts..."></textarea>
+                    <button class="action-btn btn-secondary" id="feedback-submit-btn"
+                        style="margin-top: 8px; width: 100%;">
                         Send Feedback
                     </button>
                 </div>
@@ -2014,8 +2074,8 @@
                 const renamed = getRenameMapping(data.name, data.parsed);
                 const ext = data.name.split('.').pop().toLowerCase();
                 const badgeText = ext === 'pdf' ? 'Renamed & Classified' : 'PDF Converted & Classified';
-                const badgeStyle = ext === 'pdf' 
-                    ? 'color: #60a5fa; background-color: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.2);' 
+                const badgeStyle = ext === 'pdf'
+                    ? 'color: #60a5fa; background-color: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.2);'
                     : 'color: #10b981; background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2);';
 
                 const fileHtml = `
