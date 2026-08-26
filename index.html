@@ -1214,7 +1214,160 @@
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2);
         }
+
+        .download-btn-deposit {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            color: #ffffff;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+        }
+
+        .download-btn-deposit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+            color: #ffffff;
+        }
+
+        /* VIP Pricing Card Styles */
+        .pricing-section {
+            max-width: 1400px;
+            margin: 0 auto 40px auto;
+            padding: 0 40px;
+            width: 100%;
+            z-index: 5;
+        }
+
+        .pricing-card {
+            background: rgba(18, 24, 38, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 32px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #6366f1, #14b8a6, #a855f7);
+        }
+
+        .pricing-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            background: rgba(168, 85, 247, 0.15);
+            color: #d8b4fe;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .pricing-title {
+            font-family: var(--font-title);
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .pricing-desc {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            max-width: 600px;
+            line-height: 1.5;
+        }
+
+        .pricing-action-box {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+        }
+
+        .price-tag {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .price-strike {
+            text-decoration: line-through;
+            color: #6b7280;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .price-amount {
+            font-family: var(--font-title);
+            font-size: 32px;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+
+        .price-period {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .deposit-cta-main {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: #ffffff;
+            font-family: var(--font-sans);
+            font-size: 14px;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            transition: all 0.25 ease;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .deposit-cta-main:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(168, 85, 247, 0.5);
+            color: #ffffff;
+        }
+
+        .refund-note {
+            font-size: 11px;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
     </style>
+    <script src="https://assets.lemonsqueezy.com/lemonsqueezy.js" defer></script>
 </head>
 
 <body>
@@ -1251,6 +1404,9 @@
             <div class="status-badge">Validation Sandbox</div>
         </div>
         <div class="header-actions">
+            <a href="https://theopslabs.lemonsqueezy.com/checkout/buy/924a0d59-4185-46c5-9bb6-c6436192890b?embed=1" class="lemonsqueezy-button download-btn-deposit" onclick="logTelemetry('LEMON_SQUEEZY_HEADER_CLICK')">
+                👑 Reserve VIP Slot ($19 Deposit)
+            </a>
             <a href="samples/client_ledger.csv" download class="download-btn-csv">
                 <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"
                     style="margin-right: 6px; display: inline-block; vertical-align: -1px;">
@@ -1450,6 +1606,34 @@
             </div>
         </div>
     </main>
+
+    <!-- VIP Early Access Deposit Pricing Section -->
+    <section class="pricing-section">
+        <div class="pricing-card">
+            <div>
+                <div class="pricing-badge">🔥 VIP Early Adopter Offer</div>
+                <h2 class="pricing-title">Lock in 50% Lifetime Discount</h2>
+                <p class="pricing-desc">
+                    Reserve your early access spot with a $19 fully-refundable deposit. Guarantees 50% off standard pricing forever upon official launch.
+                </p>
+            </div>
+            <div class="pricing-action-box">
+                <div class="price-tag">
+                    <span class="price-amount">$19</span>
+                    <span class="price-period">Refundable Deposit</span>
+                </div>
+                <a href="https://theopslabs.lemonsqueezy.com/checkout/buy/924a0d59-4185-46c5-9bb6-c6436192890b?embed=1" class="lemonsqueezy-button deposit-cta-main" onclick="logTelemetry('LEMON_SQUEEZY_PRICING_CLICK')">
+                    Reserve VIP Slot ($19 Deposit) →
+                </a>
+                <div class="refund-note">
+                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    100% Refundable Deposit &bull; Instant Refund Prior to Launch
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Lead Capture Modal Overlay -->
     <div class="modal-overlay" id="lead-modal">
