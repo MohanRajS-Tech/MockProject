@@ -4,30 +4,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LedgerDrop - Automated Document Renaming & Intake | Prototype</title>
-    <!-- Google Fonts -->
+    <title>LedgerDrop - SMS Magic Link Receipt Collection for Bookkeeping Firms</title>
+    <!-- Modern Typography: Inter & Outfit & Fira Code -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
         rel="stylesheet">
 
     <style>
-        /* CSS Reset & Variables */
+        /* CSS Design System & Variables */
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: rgba(22, 30, 49, 0.7);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
+            --bg-base: #070a12;
+            --bg-surface: rgba(15, 23, 42, 0.75);
+            --bg-card: rgba(19, 29, 53, 0.65);
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-focus: rgba(99, 102, 241, 0.4);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
             --primary: #6366f1;
-            --primary-glow: rgba(99, 102, 241, 0.15);
+            --primary-light: #818cf8;
+            --primary-glow: rgba(99, 102, 241, 0.25);
             --accent-teal: #14b8a6;
-            --accent-teal-glow: rgba(20, 184, 166, 0.15);
+            --accent-teal-glow: rgba(20, 184, 166, 0.2);
             --success: #10b981;
-            --font-sans: 'Inter', sans-serif;
-            --font-title: 'Outfit', sans-serif;
+            --success-glow: rgba(16, 185, 129, 0.2);
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.25);
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --warning: #f59e0b;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-display: 'Outfit', sans-serif;
             --font-mono: 'Fira Code', monospace;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+            --radius-full: 9999px;
+            --shadow-card: 0 16px 40px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border-subtle);
+            --shadow-glow: 0 0 35px var(--primary-glow);
         }
 
         * {
@@ -36,832 +52,1194 @@
             padding: 0;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: var(--font-sans);
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background-color: var(--bg-base);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
             position: relative;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Ambient Glowing Background Elements */
-        .glow-bg {
+        /* Ambient Gradient Meshes */
+        .ambient-glow-1 {
             position: absolute;
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--primary-glow) 0%, rgba(0, 0, 0, 0) 70%);
-            top: -100px;
-            right: -100px;
-            z-index: 0;
-            pointer-events: none;
-            filter: blur(40px);
-        }
-
-        .glow-bg-2 {
-            position: absolute;
-            width: 500px;
+            top: -150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 900px;
             height: 500px;
             border-radius: 50%;
-            background: radial-gradient(circle, var(--accent-teal-glow) 0%, rgba(0, 0, 0, 0) 70%);
-            bottom: -150px;
-            left: -150px;
-            z-index: 0;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, rgba(20, 184, 166, 0.08) 50%, transparent 70%);
             pointer-events: none;
-            filter: blur(50px);
+            filter: blur(80px);
+            z-index: 0;
         }
 
-        /* Navbar Layout */
+        .ambient-glow-2 {
+            position: absolute;
+            top: 700px;
+            right: -200px;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(20, 184, 166, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+            filter: blur(90px);
+            z-index: 0;
+        }
+
+        /* Header Navigation */
         header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 40px;
-            border-bottom: 1px solid var(--border-color);
-            background-color: rgba(11, 15, 25, 0.8);
-            backdrop-filter: blur(12px);
-            z-index: 10;
+            padding: 16px 48px;
+            background: rgba(7, 10, 18, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-subtle);
         }
 
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            text-decoration: none;
         }
 
         .logo-icon {
-            width: 32px;
-            height: 32px;
+            width: 38px;
+            height: 38px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--accent-teal) 100%);
-            border-radius: 8px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
-            font-weight: 800;
-            font-family: var(--font-title);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 16px var(--primary-glow);
         }
 
-        .logo-text {
-            font-family: var(--font-title);
-            font-size: 20px;
+        .logo-title {
+            font-family: var(--font-display);
+            font-size: 21px;
             font-weight: 700;
+            color: #fff;
             letter-spacing: -0.5px;
-            color: #ffffff;
         }
 
-        .status-badge {
+        .logo-title span {
+            color: var(--accent-teal);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .audience-pill {
+            font-size: 11.5px;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            padding: 5px 12px;
+            border-radius: var(--radius-full);
+            background: rgba(99, 102, 241, 0.12);
+            color: var(--primary-light);
+            border: 1px solid rgba(99, 102, 241, 0.28);
+        }
+
+        .btn-ghost-nav {
+            background: rgba(255, 255, 255, 0.04);
+            color: #f1f5f9;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-ghost-nav:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-vip-nav,
+        a.btn-vip-nav,
+        a.btn-vip-nav:visited,
+        a.btn-vip-nav:link,
+        a.btn-vip-nav:active {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #070a12 !important;
+            border: 1px solid rgba(251, 191, 36, 0.6);
+            padding: 9px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 800;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);
+        }
+
+        .btn-vip-nav:hover,
+        a.btn-vip-nav:hover {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #000000 !important;
+            box-shadow: 0 6px 22px rgba(245, 158, 11, 0.55);
+            transform: translateY(-1px);
+        }
+
+        .btn-nav {
+            background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 9px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
+        }
+
+        .btn-nav:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .sim-live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             font-size: 11px;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background-color: rgba(99, 102, 241, 0.15);
-            color: #a5b4fc;
+            color: var(--accent-teal);
+            background: rgba(20, 184, 166, 0.08);
+            border: 1px solid rgba(20, 184, 166, 0.25);
             padding: 4px 10px;
-            border-radius: 12px;
-            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: var(--radius-full);
         }
 
-        /* Main Viewport Grid */
-        main {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            padding: 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-            flex-grow: 1;
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--accent-teal);
+            box-shadow: 0 0 8px var(--accent-teal);
+            animation: pulse-ring 1.8s infinite ease-in-out;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
             z-index: 5;
-        }
-
-        /* Left Panel - Introduction and Dropzone */
-        .left-panel {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 68px 24px 40px 24px;
+            text-align: center;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            gap: 24px;
+            align-items: center;
         }
 
-        .hero-title {
-            font-family: var(--font-title);
-            font-size: 42px;
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: var(--radius-full);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--accent-teal);
+            margin-bottom: 24px;
+            backdrop-filter: blur(8px);
+        }
+
+        .hero-tag-pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-teal);
+            box-shadow: 0 0 10px var(--accent-teal);
+            animation: pulse-ring 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.9); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.8; }
+        }
+
+        .hero-headline {
+            font-family: var(--font-display);
+            font-size: 52px;
+            line-height: 1.12;
             font-weight: 800;
-            line-height: 1.15;
-            letter-spacing: -1px;
+            letter-spacing: -1.5px;
+            max-width: 950px;
+            margin-bottom: 24px;
             color: #ffffff;
         }
 
-        .hero-title span {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent-teal) 100%);
+        .hero-headline .highlight-gradient {
+            background: linear-gradient(135deg, #a5b4fc 0%, #38bdf8 50%, #2dd4bf 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            color: #818cf8;
             display: inline-block;
         }
 
-        .hero-desc {
-            font-size: 15px;
-            line-height: 1.6;
-            color: var(--text-muted);
-            max-width: 540px;
+        .hero-subtext {
+            font-size: 17px;
+            line-height: 1.65;
+            color: var(--text-secondary);
+            max-width: 720px;
+            margin-bottom: 34px;
+            font-weight: 400;
         }
 
-        /* Dropzone Component */
-        .dropzone-container {
-            background-color: var(--card-bg);
-            border: 2px dashed rgba(99, 102, 241, 0.3);
-            border-radius: 16px;
-            padding: 50px 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(8px);
-        }
-
-        .dropzone-container::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .dropzone-container:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.1);
-        }
-
-        .dropzone-container:hover::before {
-            opacity: 1;
-        }
-
-        .dropzone-container.dragover {
-            border-color: var(--accent-teal);
-            background-color: rgba(20, 184, 166, 0.08);
-            box-shadow: 0 0 30px rgba(20, 184, 166, 0.2);
-            transform: scale(1.02);
-        }
-
-        .upload-icon {
-            width: 64px;
-            height: 64px;
-            background-color: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
+        .hero-cta-wrap {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 16px auto;
-            color: var(--primary);
-            transition: all 0.3s ease;
+            gap: 16px;
+            margin-bottom: 36px;
+            flex-wrap: wrap;
         }
 
-        .dropzone-container:hover .upload-icon {
-            color: var(--accent-teal);
-            background-color: rgba(255, 255, 255, 0.05);
-            transform: rotate(5deg) scale(1.05);
-        }
-
-        .dropzone-title {
-            font-family: var(--font-title);
-            font-size: 18px;
+        .btn-hero-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 14px 32px;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
             font-weight: 600;
-            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .dropzone-subtitle {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 20px;
+        .btn-hero-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.5);
+            border-color: rgba(255, 255, 255, 0.4);
         }
 
-        .demo-btn {
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 8px 18px;
-            font-size: 13px;
+        .btn-hero-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 14px 26px;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
             font-weight: 500;
-            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-hero-secondary:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .trust-checklist {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .trust-check {
+            color: var(--accent-teal);
+            font-weight: 800;
+        }
+
+        /* Main Simulation Showcase: Side-by-Side Dual Mockup */
+        .showcase-section {
             position: relative;
-            z-index: 2;
+            z-index: 5;
+            max-width: 1200px;
+            margin: 20px auto 60px auto;
+            padding: 0 24px;
+            width: 100%;
         }
 
-        .demo-btn:hover {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            box-shadow: 0 4px 15px var(--primary-glow);
-        }
-
-        /* Visual Demo Showcase Card */
-        .demo-visual-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 22px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(8px);
+        .showcase-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 36px;
+            box-shadow: var(--shadow-card);
+            backdrop-filter: blur(20px);
             position: relative;
             overflow: hidden;
+        }
+
+        .showcase-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), rgba(20, 184, 166, 0.5), transparent);
+        }
+
+        .showcase-header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
             gap: 16px;
         }
 
-        .visual-card-header {
+        .showcase-title-block h3 {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
+            gap: 10px;
         }
 
-        .visual-badge {
-            font-size: 11px;
-            font-weight: 600;
-            color: #2dd4bf;
-            background: rgba(20, 184, 166, 0.12);
-            border: 1px solid rgba(20, 184, 166, 0.3);
-            padding: 4px 10px;
-            border-radius: 12px;
-            letter-spacing: 0.3px;
+        .showcase-title-block p {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            margin-top: 4px;
         }
 
-        .visual-subtext {
-            font-size: 11px;
+        .sim-controller-pills {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: rgba(11, 15, 25, 0.6);
+            padding: 5px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .controller-btn {
+            background: transparent;
+            border: none;
             color: var(--text-muted);
-            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: var(--font-sans);
         }
 
-        .transformation-container {
+        .controller-btn.active {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.4);
+        }
+
+        .controller-btn:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        /* Dual Simulation Grid */
+        .dual-simulation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.25fr;
+            gap: 32px;
+            align-items: stretch;
+        }
+
+        @media (max-width: 960px) {
+            .dual-simulation-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-headline {
+                font-size: 38px;
+            }
+            header {
+                padding: 16px 20px;
+            }
+        }
+
+        /* Panel 1: Simulated Client Smartphone / SMS */
+        .phone-mockup-wrapper {
+            background: #090d16;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
+            padding: 18px 14px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            position: relative;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            background: rgba(11, 15, 25, 0.5);
-            padding: 14px;
+            flex-direction: column;
+            min-height: 480px;
+        }
+
+        .phone-top-notch {
+            width: 110px;
+            height: 18px;
+            background: #151d30;
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        .raw-file-box,
-        .renamed-file-box {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            border-radius: 10px;
-            min-width: 0;
-        }
-
-        .renamed-file-box {
-            border-color: rgba(20, 184, 166, 0.25);
-            background: rgba(20, 184, 166, 0.03);
-        }
-
-        .file-icon-thumb {
-            font-size: 18px;
-            width: 34px;
-            height: 34px;
+            margin: 0 auto 16px auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.05);
+            gap: 6px;
+        }
+
+        .camera-lens {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #0b0f19;
+        }
+
+        .phone-header {
+            text-align: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 20px;
+        }
+
+        .avatar-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px auto;
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+        }
+
+        .phone-contact-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .phone-contact-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .sms-messages-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding: 0 4px;
+        }
+
+        .sms-timestamp {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sms-bubble {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 16px 16px 16px 4px;
+            padding: 13px 15px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #e2e8f0;
+            max-width: 90%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .sms-bubble strong {
+            color: #fff;
+        }
+
+        .sms-link-card {
+            margin-top: 10px;
+            background: rgba(11, 15, 25, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .sms-link-card:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+            transform: scale(1.02);
+        }
+
+        .sms-link-icon {
+            width: 32px;
+            height: 32px;
             border-radius: 8px;
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
             flex-shrink: 0;
         }
 
-        .thumb-success {
-            background: rgba(20, 184, 166, 0.15);
-        }
-
-        .file-info-text {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
+        .sms-link-meta {
             min-width: 0;
         }
 
-        .file-name-raw,
-        .file-name-clean {
+        .sms-link-url {
             font-family: var(--font-mono);
             font-size: 11px;
+            color: #38bdf8;
             font-weight: 500;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .file-name-raw {
-            color: #f87171;
-        }
-
-        .file-name-clean {
-            color: #34d399;
-        }
-
-        .file-status-tag {
+        .sms-link-desc {
             font-size: 10px;
             color: var(--text-muted);
         }
 
-        .tag-raw {
-            color: #ef4444;
-        }
-
-        .tag-clean {
-            color: #10b981;
-        }
-
-        .transform-arrow {
-            color: var(--accent-teal);
+        .phone-quick-reply {
+            margin-top: auto;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            animation: pulse-arrow 2s infinite ease-in-out;
+            gap: 8px;
         }
 
-        @keyframes pulse-arrow {
-
-            0%,
-            100% {
-                transform: translateX(0);
-                opacity: 0.8;
-            }
-
-            50% {
-                transform: translateX(4px);
-                opacity: 1;
-            }
+        .quick-input-placeholder {
+            background: #151d30;
+            border-radius: 18px;
+            padding: 8px 14px;
+            font-size: 11px;
+            color: var(--text-muted);
+            flex-grow: 1;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Interactive Video Simulation Frame */
-        .video-sim-container {
+        /* Panel 2: Magic Link Dropzone & Real-Time Legibility Rejection */
+        .dropzone-mockup-wrapper {
             background: #0d1322;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
             display: flex;
             flex-direction: column;
-            min-height: 280px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
         }
 
-        .sim-titlebar {
-            background: #151d30;
-            padding: 8px 14px;
+        .browser-bar {
+            background: #151e33;
+            padding: 10px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .sim-dots {
+        .browser-dots {
             display: flex;
             gap: 6px;
         }
 
-        .sim-dot {
+        .b-dot {
             width: 10px;
             height: 10px;
             border-radius: 50%;
         }
 
-        .dot-red {
-            background: #ef4444;
-        }
+        .b-dot-1 { background: #ef4444; }
+        .b-dot-2 { background: #f59e0b; }
+        .b-dot-3 { background: #10b981; }
 
-        .dot-yellow {
-            background: #f59e0b;
-        }
-
-        .dot-green {
-            background: #10b981;
-        }
-
-        .sim-title-text {
-            font-size: 11px;
-            color: var(--text-muted);
+        .browser-address {
+            background: #090d16;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 6px;
+            padding: 3px 14px;
             font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .sim-body {
-            padding: 16px;
-            position: relative;
+        .lock-icon {
+            color: var(--accent-teal);
+            font-size: 10px;
+        }
+
+        .dropzone-body {
+            padding: 24px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            position: relative;
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.05), transparent 60%);
         }
 
-        .sim-dropzone {
-            border: 2px dashed rgba(99, 102, 241, 0.35);
-            border-radius: 10px;
-            padding: 24px 16px;
-            text-align: center;
-            background: rgba(22, 30, 49, 0.5);
-            transition: all 0.3s ease;
-        }
-
-        .sim-dropzone.active {
-            border-color: var(--accent-teal);
-            background: rgba(20, 184, 166, 0.1);
-        }
-
-        .sim-btn {
-            background: var(--primary);
-            color: #fff;
-            padding: 6px 14px;
-            font-size: 11px;
-            font-weight: 600;
-            border-radius: 6px;
-            border: none;
-            display: inline-block;
-            margin-top: 10px;
-        }
-
-        /* File Manager Overlay */
-        .sim-file-manager {
-            position: absolute;
-            inset: 12px;
-            background: #192238;
-            border: 1px solid rgba(99, 102, 241, 0.4);
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-            display: none;
-            flex-direction: column;
-            z-index: 10;
-            overflow: hidden;
-            animation: fadeInModal 0.3s ease;
-        }
-
-        @keyframes fadeInModal {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .fm-header {
-            background: #111728;
-            padding: 8px 12px;
-            font-size: 11px;
-            font-weight: 600;
-            color: #a5b4fc;
+        .client-context-bar {
             display: flex;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 18px;
         }
 
-        .fm-file-list {
-            padding: 10px;
+        .client-info-firm {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .client-info-client {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .token-expiry-badge {
+            font-size: 11px;
+            font-family: var(--font-mono);
+            background: rgba(20, 184, 166, 0.1);
+            border: 1px solid rgba(20, 184, 166, 0.3);
+            color: #2dd4bf;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        /* Interactive Simulation Stage Container */
+        .stage-box {
+            flex-grow: 1;
+            border-radius: 14px;
+            border: 2px dashed rgba(255, 255, 255, 0.12);
+            background: rgba(14, 20, 35, 0.6);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            min-height: 280px;
+        }
+
+        /* Rejection State Glowing Border */
+        .stage-box.state-rejected {
+            border: 2px solid var(--danger);
+            background: rgba(239, 68, 68, 0.06);
+            box-shadow: 0 0 30px var(--danger-glow);
+            animation: shake 0.4s ease;
+        }
+
+        /* Compliant Passing State Border */
+        .stage-box.state-passed {
+            border: 2px solid var(--success);
+            background: rgba(16, 185, 129, 0.05);
+            box-shadow: 0 0 30px var(--success-glow);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        /* Receipt Preview Mockup */
+        .receipt-preview-card {
+            position: relative;
+            width: 200px;
+            height: 180px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            padding: 14px;
+            color: #1e293b;
             display: flex;
             flex-direction: column;
             gap: 6px;
-            flex-grow: 1;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            overflow: hidden;
         }
 
-        .fm-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.02);
-            font-size: 11px;
-            font-family: var(--font-mono);
-            color: var(--text-muted);
-            transition: all 0.2s ease;
+        /* Blurry Effect applied dynamically */
+        .receipt-preview-card.blurred-photo {
+            filter: blur(4.5px);
+            opacity: 0.85;
         }
 
-        .fm-row.selected {
-            background: rgba(99, 102, 241, 0.25);
-            border: 1px solid rgba(99, 102, 241, 0.5);
-            color: #fff;
+        .receipt-preview-card.sharp-photo {
+            filter: blur(0);
+            opacity: 1;
         }
 
-        .fm-actions {
-            padding: 8px 12px;
-            background: #111728;
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
+        .receipt-header-line {
+            height: 10px;
+            background: #334155;
+            border-radius: 2px;
+            width: 70%;
+            margin: 0 auto 6px auto;
         }
 
-        .fm-btn-open {
-            background: var(--accent-teal);
-            color: #0b0f19;
-            font-weight: 700;
-            padding: 4px 12px;
-            font-size: 11px;
-            border-radius: 4px;
-            border: none;
-        }
-
-        /* Cursor Animation */
-        .sim-cursor {
-            position: absolute;
-            width: 18px;
-            height: 18px;
-            z-index: 20;
-            pointer-events: none;
-            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
-        }
-
-        .sim-cursor.clicking {
-            transform: scale(0.85);
-        }
-
-        /* Processing State */
-        .sim-processing {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 20px;
-        }
-
-        .sim-spinner {
-            width: 28px;
-            height: 28px;
-            border: 3px solid rgba(20, 184, 166, 0.2);
-            border-top-color: var(--accent-teal);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Output Results State */
-        .sim-results {
-            display: none;
-            flex-direction: column;
-            gap: 8px;
+        .receipt-mock-row {
+            height: 6px;
+            background: #cbd5e1;
+            border-radius: 2px;
             width: 100%;
         }
 
-        .sim-result-card {
-            background: rgba(16, 185, 129, 0.08);
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            border-radius: 8px;
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
-            animation: highlightPulse 1s ease;
+        .receipt-mock-row.short {
+            width: 50%;
         }
 
-        @keyframes highlightPulse {
-            0% {
-                transform: scale(0.98);
-                background: rgba(16, 185, 129, 0.25);
-            }
-
-            100% {
-                transform: scale(1);
-                background: rgba(16, 185, 129, 0.08);
-            }
-        }
-
-        /* Right Panel - Processing & Results */
-        .right-panel {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(8px);
-            position: relative;
-            min-height: 480px;
-        }
-
-        .panel-header {
+        .receipt-mock-total {
+            margin-top: auto;
+            border-top: 1px dashed #94a3b8;
+            padding-top: 6px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 16px;
-            margin-bottom: 20px;
-        }
-
-        .panel-title {
-            font-family: var(--font-title);
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        /* Empty State */
-        .empty-state {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: var(--text-muted);
-            gap: 16px;
-        }
-
-        .empty-icon {
-            font-size: 40px;
-            opacity: 0.3;
-        }
-
-        /* Processing Loader Container */
-        .processing-container {
-            display: none;
-            flex-grow: 1;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            gap: 20px;
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 3px solid rgba(99, 102, 241, 0.1);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s infinite linear;
-        }
-
-        .loader-status {
-            font-family: var(--font-mono);
-            font-size: 13px;
-            color: var(--accent-teal);
-            height: 20px;
-        }
-
-        /* Processed List Container */
-        .results-container {
-            display: none;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .file-list {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            margin-bottom: 24px;
-            flex-grow: 1;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .file-item {
-            background-color: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            animation: slideIn 0.4s ease forwards;
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        .file-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .old-name {
-            font-size: 13px;
-            color: var(--text-muted);
-            text-decoration: line-through;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 250px;
-        }
-
-        .file-badge {
             font-size: 10px;
-            font-weight: 600;
-            color: var(--success);
-            background-color: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            padding: 2px 8px;
-            border-radius: 10px;
+            font-weight: 700;
+            color: #0f172a;
         }
 
-        .new-name-box {
+        /* Active Scanner Laser Beam */
+        .scanner-beam {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #6366f1, #2dd4bf, transparent);
+            box-shadow: 0 0 12px #6366f1;
+            top: 0;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .scanner-beam.active {
+            opacity: 1;
+            animation: scan-vertical 1.6s infinite ease-in-out;
+        }
+
+        @keyframes scan-vertical {
+            0% { top: 10%; }
+            50% { top: 85%; }
+            100% { top: 10%; }
+        }
+
+        /* Rejection Banner */
+        .rejection-banner {
+            display: none;
+            background: var(--danger-bg);
+            border: 1px solid var(--danger);
+            color: #fca5a5;
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            width: 100%;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        .rejection-banner .rejection-reason {
+            display: block;
+            font-size: 11px;
+            color: #f87171;
+            font-weight: 400;
+            margin-top: 4px;
+        }
+
+        /* Success Banner */
+        .success-banner {
+            display: none;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid var(--success);
+            color: #6ee7b7;
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            width: 100%;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        .success-banner .metadata-tags {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 6px;
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            color: #34d399;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Interactive controls at bottom of mockup */
+        .mockup-actions-strip {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background-color: rgba(99, 102, 241, 0.06);
-            border: 1px solid rgba(99, 102, 241, 0.15);
+            justify-content: space-between;
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .sim-btn-trigger {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 8px 16px;
             border-radius: 8px;
-            padding: 10px 12px;
-        }
-
-        .new-name-box svg {
-            color: var(--primary);
-            flex-shrink: 0;
-        }
-
-        .new-name {
-            font-family: var(--font-mono);
             font-size: 12.5px;
-            color: #a5b4fc;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Action Buttons footer */
-        .actions-panel {
-            display: flex;
-            gap: 16px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sim-btn-trigger:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .sim-btn-trigger.danger {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .sim-btn-trigger.danger:hover {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: var(--danger);
+        }
+
+        .sim-btn-trigger.success {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+        }
+
+        .sim-btn-trigger.success:hover {
+            background: rgba(16, 185, 129, 0.25);
+            border-color: var(--success);
+        }
+
+        /* Pillars Section: B2B Value for Bookkeeping Firms */
+        .pillars-section {
+            max-width: 1200px;
+            margin: 40px auto 80px auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-badge {
+            font-size: 11.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--primary-light);
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+        }
+
+        .section-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 620px;
+            margin: 0 auto;
+        }
+
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 860px) {
+            .pillars-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pillar-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pillar-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-focus);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
+        }
+
+        .pillar-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.25);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            font-size: 22px;
+            color: var(--primary-light);
         }
 
-        .btn-primary {
-            background-color: var(--primary);
-            border: 1px solid var(--primary);
-            color: #fff;
+        .pillar-card:nth-child(2) .pillar-icon-box {
+            background: rgba(20, 184, 166, 0.12);
+            border-color: rgba(20, 184, 166, 0.25);
+            color: var(--accent-teal);
         }
 
-        .btn-primary:hover {
-            background-color: #4f46e5;
-            box-shadow: 0 4px 20px var(--primary-glow);
+        .pillar-card:nth-child(3) .pillar-icon-box {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.25);
+            color: var(--success);
         }
 
-        .btn-secondary {
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
+        .pillar-heading {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
         }
 
-        .btn-secondary:hover {
-            background-color: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.15);
+        .pillar-body {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary);
         }
 
-        /* Lead Capture Modal Overlay */
+        .pillar-metric {
+            margin-top: auto;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-teal);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* VIP Early Access Pricing Section */
+        .pricing-section {
+            max-width: 1000px;
+            margin: 0 auto 80px auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .pricing-card {
+            background: linear-gradient(135deg, rgba(22, 30, 49, 0.9) 0%, rgba(13, 20, 36, 0.9) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 40px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 32px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 102, 241, 0.15);
+            flex-wrap: wrap;
+        }
+
+        .pricing-badge {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .pricing-title {
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .pricing-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            max-width: 480px;
+            line-height: 1.6;
+        }
+
+        .pricing-action-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            min-width: 260px;
+        }
+
+        .price-tag {
+            text-align: center;
+        }
+
+        .price-amount {
+            font-family: var(--font-display);
+            font-size: 42px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .price-period {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        .deposit-cta-main,
+        a.deposit-cta-main,
+        a.deposit-cta-main:visited,
+        a.deposit-cta-main:link,
+        a.deposit-cta-main:active {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #070a12 !important;
+            border: 1px solid rgba(251, 191, 36, 0.6);
+            font-weight: 800;
+            font-size: 14.5px;
+            padding: 13px 26px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);
+            display: inline-block;
+            text-align: center;
+            width: 100%;
+        }
+
+        .deposit-cta-main:hover,
+        a.deposit-cta-main:hover {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #000000 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 26px rgba(245, 158, 11, 0.55);
+        }
+
+        .refund-note {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Preserved & Modernized Lead Capture Modal */
         .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
             background-color: rgba(5, 7, 12, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 100;
+            backdrop-filter: blur(12px);
+            z-index: 200;
             align-items: center;
             justify-content: center;
             opacity: 0;
             transition: opacity 0.3s ease;
+            padding: 16px;
         }
 
         .modal-overlay.active {
@@ -870,13 +1248,13 @@
         }
 
         .modal-card {
-            background-color: #121824;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background-color: #111827;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             width: 100%;
             max-width: 480px;
-            padding: 32px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            padding: 36px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
             transform: scale(0.95);
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
@@ -902,42 +1280,44 @@
         }
 
         .modal-title {
-            font-family: var(--font-title);
+            font-family: var(--font-display);
             font-size: 24px;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             text-align: center;
+            color: #ffffff;
         }
 
         .modal-desc {
             font-size: 13.5px;
-            color: var(--text-muted);
-            line-height: 1.5;
+            color: var(--text-secondary);
+            line-height: 1.55;
             margin-bottom: 24px;
             text-align: center;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .form-label {
             display: block;
             font-size: 12.5px;
             font-weight: 600;
-            color: var(--text-main);
+            color: var(--text-primary);
             margin-bottom: 8px;
         }
 
         .email-input {
             width: 100%;
-            background-color: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
+            background-color: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
             border-radius: 8px;
             padding: 12px 16px;
             color: #fff;
             font-size: 14px;
             outline: none;
+            font-family: var(--font-sans);
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
@@ -949,13 +1329,13 @@
         .checkbox-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 28px;
+            gap: 10px;
+            margin-bottom: 24px;
         }
 
         .checkbox-card {
             background-color: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-subtle);
             border-radius: 8px;
             padding: 10px 12px;
             display: flex;
@@ -968,7 +1348,7 @@
 
         .checkbox-card:hover {
             border-color: rgba(99, 102, 241, 0.3);
-            background-color: rgba(99, 102, 241, 0.02);
+            background-color: rgba(99, 102, 241, 0.04);
         }
 
         .checkbox-card input {
@@ -984,6 +1364,8 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
+            font-size: 11px;
+            color: #fff;
         }
 
         .checkbox-card.checked .custom-checkbox {
@@ -993,649 +1375,359 @@
 
         .checkbox-card.checked {
             border-color: var(--accent-teal);
-            background-color: rgba(20, 184, 166, 0.05);
+            background-color: rgba(20, 184, 166, 0.08);
         }
 
         .checkbox-card.checked .custom-checkbox::before {
             content: '✓';
-            color: #0b0f19;
-            font-size: 11px;
+            color: #070a12;
             font-weight: 800;
         }
 
         .checkbox-label {
-            font-size: 13px;
+            font-size: 12.5px;
+            color: #e2e8f0;
             font-weight: 500;
         }
 
         .submit-btn {
             width: 100%;
-            background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
-            border: none;
+            background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: #fff;
-            padding: 14px;
+            padding: 13px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 14.5px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 15px var(--primary-glow);
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
         }
 
         .submit-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 6px 22px rgba(99, 102, 241, 0.5);
         }
 
-        /* Success State Modal Content */
         .success-state {
             display: none;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             text-align: center;
-            gap: 16px;
-            padding: 20px 0;
+            animation: fadeInModal 0.3s ease;
         }
 
         .success-circle {
-            width: 64px;
-            height: 64px;
-            background-color: rgba(16, 185, 129, 0.1);
-            border: 2px solid var(--success);
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--success);
             color: var(--success);
-            font-size: 32px;
-            animation: bounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        /* Animations */
-        @keyframes spin {
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes slideIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes bounce {
-            0% {
-                transform: scale(0.3);
-                opacity: 0;
-            }
-
-            50% {
-                transform: scale(1.1);
-            }
-
-            70% {
-                transform: scale(0.9);
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        /* Responsive Layout adjustments */
-        @media (max-width: 960px) {
-            header {
-                flex-direction: column;
-                gap: 16px;
-                padding: 15px 20px;
-                text-align: center;
-            }
-
-            .header-actions {
-                justify-content: center;
-                flex-wrap: wrap;
-                width: 100%;
-            }
-
-            main {
-                grid-template-columns: 1fr;
-                padding: 20px;
-                gap: 30px;
-            }
-
-            .left-panel {
-                text-align: center;
-                align-items: center;
-            }
-
-            .hero-desc {
-                margin: 0 auto;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .logo-container {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 8px;
-            }
-        }
-
-        /* Prevent flickering and target conflicts during drag-and-drop */
-        .dropzone-container * {
-            pointer-events: none;
-        }
-
-        .dropzone-container .demo-btn {
-            pointer-events: auto;
-        }
-
-        .disclaimer-card {
-            position: relative;
-            margin: 30px 40px 0 40px;
-            padding: 20px 24px;
-            background: rgba(15, 18, 28, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 12px;
-            font-size: 13px;
-            line-height: 1.6;
-            color: #fbbf24;
-            text-align: left;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        }
-
-        .disclaimer-card strong {
-            color: #fbbf24;
-            font-weight: 700;
-        }
-
-        .disclaimer-card code {
-            background-color: rgba(0, 0, 0, 0.25);
-            padding: 2px 5px;
-            border-radius: 4px;
-            font-family: monospace;
-            color: #fff;
-        }
-
-        .header-actions {
+            font-size: 26px;
             display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .download-btn-csv {
-            display: inline-flex;
-            align-items: center;
-            background: rgba(99, 102, 241, 0.12);
-            border: 1px solid rgba(99, 102, 241, 0.4);
-            color: #c7d2fe;
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
-
-        .download-btn-csv:hover {
-            background: rgba(99, 102, 241, 0.22);
-            border-color: rgba(99, 102, 241, 0.6);
-            color: #fff;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-        }
-
-        .download-btn-receipt {
-            display: inline-flex;
-            align-items: center;
-            background: rgba(20, 184, 166, 0.12);
-            border: 1px solid rgba(20, 184, 166, 0.4);
-            color: #99f6e4;
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
-
-        .download-btn-receipt:hover {
-            background: rgba(20, 184, 166, 0.22);
-            border-color: rgba(20, 184, 166, 0.6);
-            color: #fff;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2);
-        }
-
-        .download-btn-deposit {
-            display: inline-flex;
-            align-items: center;
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            border: 1px solid rgba(168, 85, 247, 0.5);
-            color: #ffffff;
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
-        }
-
-        .download-btn-deposit:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
-            color: #ffffff;
-        }
-
-        /* VIP Pricing Card Styles */
-        .pricing-section {
-            max-width: 1400px;
-            margin: 0 auto 40px auto;
-            padding: 0 40px;
-            width: 100%;
-            z-index: 5;
-        }
-
-        .pricing-card {
-            background: rgba(18, 24, 38, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 16px;
-            padding: 32px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 30px;
-            flex-wrap: wrap;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .pricing-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #6366f1, #14b8a6, #a855f7);
-        }
-
-        .pricing-badge {
-            display: inline-block;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            background: rgba(168, 85, 247, 0.15);
-            color: #d8b4fe;
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            margin-bottom: 10px;
-        }
-
-        .pricing-title {
-            font-family: var(--font-title);
-            font-size: 22px;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 6px;
-        }
-
-        .pricing-desc {
-            font-size: 13.5px;
-            color: var(--text-muted);
-            max-width: 600px;
-            line-height: 1.5;
-        }
-
-        .pricing-action-box {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 12px;
-        }
-
-        .price-tag {
-            display: flex;
-            align-items: baseline;
-            gap: 8px;
-        }
-
-        .price-strike {
-            text-decoration: line-through;
-            color: #6b7280;
-            font-size: 16px;
-            font-weight: 500;
-        }
-
-        .price-amount {
-            font-family: var(--font-title);
-            font-size: 32px;
-            font-weight: 800;
-            color: #38bdf8;
-        }
-
-        .price-period {
-            font-size: 12px;
-            color: #94a3b8;
-            font-weight: 500;
-        }
-
-        .deposit-cta-main {
-            display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            color: #ffffff;
-            font-family: var(--font-sans);
-            font-size: 14px;
-            font-weight: 700;
-            padding: 12px 24px;
-            border-radius: 10px;
-            text-decoration: none;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
-            transition: all 0.25 ease;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            margin-bottom: 16px;
+            box-shadow: 0 0 20px var(--success-glow);
         }
 
-        .deposit-cta-main:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(168, 85, 247, 0.5);
-            color: #ffffff;
+        @keyframes fadeInModal {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        .refund-note {
-            font-size: 11px;
-            color: #10b981;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: 500;
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-subtle);
+            padding: 30px 48px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: auto;
+            position: relative;
+            z-index: 5;
+            background: rgba(7, 10, 18, 0.6);
         }
     </style>
-    <script src="https://assets.lemonsqueezy.com/lemonsqueezy.js" defer></script>
 </head>
 
 <body>
+    <!-- Ambient Backdrop Effects -->
+    <div class="ambient-glow-1"></div>
+    <div class="ambient-glow-2"></div>
 
-    <div class="disclaimer-card" id="disclaimer-banner">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 30px; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 300px;">
-                <strong style="font-size: 14px; display: block; margin-bottom: 6px;">How to test this interactive
-                    Demo:</strong>
-                This page is an interactive validation sandbox for LedgerDrop. The production version automatically
-                parses client files, extracts transaction details, standardizes filenames to your bookkeeping schema,
-                and routes them directly to your Google Drive or OneDrive.
-                <div style="margin-top: 8px; font-size: 12px; color: rgba(252, 211, 77, 0.85); line-height: 1.5;">
-                    • <strong>Spreadsheets (<code>.csv</code>, <code>.xlsx</code>)</strong>: The system will dynamically
-                    read your file rows, calculate total transaction amounts, convert formats, and standardize the name.
-                    Try uploading your own CSV ledger.<br />
-                    • <strong>Receipt Photos (<code>.jpg</code>, <code>.png</code>)</strong>: In this demo, only
-                    renaming based on the filename is active. Full image-text reading and automatic value extraction are
-                    currently in development.
-                </div>
-            </div>
-        </div>
-        <button onclick="document.getElementById('disclaimer-banner').style.display='none'"
-            style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: #fbbf24; cursor: pointer; font-size: 16px; font-weight: bold; padding: 4px; line-height: 1;">✕</button>
-    </div>
-
-    <div class="glow-bg"></div>
-    <div class="glow-bg-2"></div>
-
+    <!-- 1. Header Navigation -->
     <header>
-        <div class="logo-container">
-            <div class="logo-icon">L</div>
-            <div class="logo-text">LedgerDrop</div>
-            <div class="status-badge">Validation Sandbox</div>
-        </div>
-        <div class="header-actions">
-            <a href="https://theopslabs.lemonsqueezy.com/checkout/buy/924a0d59-4185-46c5-9bb6-c6436192890b?embed=1" class="lemonsqueezy-button download-btn-deposit" onclick="logTelemetry('LEMON_SQUEEZY_HEADER_CLICK')">
-                👑 Reserve VIP Slot ($19 Deposit)
-            </a>
-            <a href="samples/client_ledger.csv" download class="download-btn-csv">
-                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"
-                    style="margin-right: 6px; display: inline-block; vertical-align: -1px;">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3">
-                    </path>
+        <a href="#" class="logo-container">
+            <div class="logo-icon">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                Download Sample CSV
-            </a>
-            <a href="javascript:void(0)" onclick="forceDownload('samples/shell_receipt.png', 'shell_receipt.png')"
-                class="download-btn-receipt">
-                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"
-                    style="margin-right: 6px; display: inline-block; vertical-align: -1px;">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3">
-                    </path>
-                </svg>
-                Download Sample Receipt
+            </div>
+            <div class="logo-title">Ledger<span>Drop</span></div>
+        </a>
+
+        <div class="nav-right">
+            <span class="audience-pill">Active Collection Layer</span>
+            <button class="btn-ghost-nav" id="nav-cta-btn" onclick="openModal('NAV_CTA')">Apply for Early Access</button>
+            <a href="https://theopslabs.lemonsqueezy.com/checkout/buy/924a0d59-4185-46c5-9bb6-c6436192890b?embed=1"
+                class="lemonsqueezy-button btn-vip-nav" onclick="logTelemetry('LEMON_SQUEEZY_NAV_CLICK')">
+                🔥 Reserve VIP Slot ($19)
             </a>
         </div>
     </header>
 
     <main>
-        <!-- Left Panel: Introduction and Visual Demo -->
-        <div class="left-panel">
-            <h1 class="hero-title">Stop renaming client files <span>manually.</span></h1>
-            <p class="hero-desc">
-                Boutique bookkeepers waste hours renaming client receipt photos and statements. Test how our AI
-                organizes and renames them to standard formats in seconds.
+        <!-- 2. Hero Section -->
+        <section class="hero">
+            <div class="hero-tag">
+                <span class="hero-tag-pulse"></span>
+                <span>The Active Collection Layer for Bookkeepers</span>
+            </div>
+
+            <h1 class="hero-headline">
+                Stop forcing clients to download apps.<br>
+                <span class="highlight-gradient">Collect receipts via secure SMS Magic Links.</span>
+            </h1>
+
+            <p class="hero-subtext">
+                Eliminate the end-of-month client chase and unstructured shoebox file dumps. LedgerDrop intercepts receipts at the point of spend via zero-friction SMS magic links, enforcing real-time IRS legibility checks before files touch your ledger.
             </p>
 
-            <!-- Visual Feature Showcase Card: Interactive Mini Video Demo -->
-            <div class="demo-visual-card">
-                <div class="visual-card-header">
-                    <span class="visual-badge">⚡ Smart Document Renaming</span>
-                    <span class="visual-subtext">Zero Manual Data Entry</span>
-                </div>
-
-                <div class="video-sim-container" id="sim-frame">
-                    <div class="sim-titlebar">
-                        <div class="sim-dots">
-                            <span class="sim-dot dot-red"></span>
-                            <span class="sim-dot dot-yellow"></span>
-                            <span class="sim-dot dot-green"></span>
-                        </div>
-                        <span class="sim-title-text">LedgerDrop Intake &bull; raw_client_uploads/</span>
-                        <span></span>
-                    </div>
-
-                    <div class="sim-body" id="sim-body">
-                        <!-- Animated Cursor Pointer -->
-                        <svg class="sim-cursor" id="sim-cursor" viewBox="0 0 24 24" fill="#6366f1" stroke="#ffffff"
-                            stroke-width="1.5" style="top: 75%; left: 75%;">
-                            <path d="M3 3l7 18 3-7 7-3L3 3z" />
-                        </svg>
-
-                        <!-- Idle Dropzone State -->
-                        <div class="sim-dropzone" id="sim-dz-view">
-                            <div style="font-size: 24px; margin-bottom: 6px;">📥</div>
-                            <div style="font-size: 12px; font-weight: 600; color: #fff;">Click to Select or Drag Files
-                            </div>
-                            <div style="font-size: 10px; color: var(--text-muted);">Accepts PDFs, JPEGs, PNGs up to 20MB
-                            </div>
-                            <button class="sim-btn" id="sim-select-btn">Select Files</button>
-                        </div>
-
-                        <!-- Simulated File Manager Modal -->
-                        <div class="sim-file-manager" id="sim-fm-modal">
-                            <div class="fm-header">
-                                <span>📁 File Explorer &bull; raw_client_uploads/</span>
-                                <span>5 Files</span>
-                            </div>
-                            <div class="fm-file-list" style="overflow-y: auto; max-height: 140px;">
-                                <div class="fm-row" id="fm-row-1">
-                                    <span>📄</span> <span>DCIM_00491.jpg</span> <span
-                                        style="margin-left:auto; font-size:9px;">94 KB</span>
-                                </div>
-                                <div class="fm-row" id="fm-row-2">
-                                    <span>🧾</span> <span>IMG_0982.png</span> <span
-                                        style="margin-left:auto; font-size:9px;">773 KB</span>
-                                </div>
-                                <div class="fm-row" id="fm-row-3">
-                                    <span>📄</span> <span>Scan_941_2025.pdf</span> <span
-                                        style="margin-left:auto; font-size:9px;">77 KB</span>
-                                </div>
-                                <div class="fm-row" id="fm-row-4">
-                                    <span>📷</span> <span>Photo_May_14_2025.jpg</span> <span
-                                        style="margin-left:auto; font-size:9px;">86 KB</span>
-                                </div>
-                                <div class="fm-row" id="fm-row-5">
-                                    <span>📊</span> <span>unnamed_ledger.xlsx</span> <span
-                                        style="margin-left:auto; font-size:9px;">222 KB</span>
-                                </div>
-                            </div>
-                            <div class="fm-actions">
-                                <button class="fm-btn-open" id="fm-open-btn">Open Selected (2)</button>
-                            </div>
-                        </div>
-
-                        <!-- Processing Spinner State -->
-                        <div class="sim-processing" id="sim-proc-view">
-                            <div class="sim-spinner"></div>
-                            <div style="font-size: 11px; color: var(--accent-teal); font-weight: 600;"
-                                id="sim-proc-text">Reading binary headers...</div>
-                        </div>
-
-                        <!-- Highlighted Renamed Output State -->
-                        <div class="sim-results" id="sim-res-view">
-                            <div class="sim-result-card">
-                                <div style="display:flex; align-items:center; gap:8px;">
-                                    <span style="font-size:16px;">📄</span>
-                                    <div style="display:flex; flex-direction:column;">
-                                        <span
-                                            style="font-family:var(--font-mono); font-size:11px; font-weight:700; color:#34d399;">2026-08-06_Shell_USD_42.50.pdf</span>
-                                        <span style="font-size:9px; color:#10b981;">Standardized Ledger Format</span>
-                                    </div>
-                                </div>
-                                <span
-                                    style="font-size:9px; background:rgba(16,185,129,0.2); color:#34d399; padding:2px 6px; border-radius:4px; font-weight:600;">Auto-Renamed</span>
-                            </div>
-                            <div class="sim-result-card" style="animation-delay: 0.2s;">
-                                <div style="display:flex; align-items:center; gap:8px;">
-                                    <span style="font-size:16px;">📄</span>
-                                    <div style="display:flex; flex-direction:column;">
-                                        <span
-                                            style="font-family:var(--font-mono); font-size:11px; font-weight:700; color:#34d399;">2026-05-14_Staples_USD_124.99.pdf</span>
-                                        <span style="font-size:9px; color:#10b981;">Standardized Ledger Format</span>
-                                    </div>
-                                </div>
-                                <span
-                                    style="font-size:9px; background:rgba(16,185,129,0.2); color:#34d399; padding:2px 6px; border-radius:4px; font-weight:600;">Auto-Renamed</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Panel: Dropzone & Result Pipeline -->
-        <div class="right-panel">
-            <div class="dropzone-container" id="dropzone">
-                <div class="upload-icon">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
-                        </path>
+            <div class="hero-cta-wrap">
+                <button class="btn-hero-primary" id="hero-cta-btn" onclick="openModal('HERO_CTA')">
+                    Apply for Early Access
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
+                </button>
+                <button class="btn-hero-secondary" id="hero-demo-trigger">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Replay Simulation
+                </button>
+            </div>
+
+            <div class="trust-checklist">
+                <div class="trust-item">
+                    <span class="trust-check">✓</span>
+                    <span>Zero Client Logins or Passwords</span>
                 </div>
-                <div class="dropzone-title">Click to Select or Drag Files Here</div>
-                <div class="dropzone-subtitle">Accepts PDFs, JPEGs, PNGs, XLSX & CSV up to 20MB</div>
-                <button class="demo-btn" id="demo-trigger">Try with Demo Files</button>
+                <div class="trust-item">
+                    <span class="trust-check">✓</span>
+                    <span>Real-Time IRS Legibility Rejection</span>
+                </div>
+                <div class="trust-item">
+                    <span class="trust-check">✓</span>
+                    <span>Automated QBO, Xero & Drive Sync</span>
+                </div>
             </div>
+        </section>
 
-            <div class="panel-header" style="margin-top: 24px;">
-                <div class="panel-title">Processed Document Pipeline</div>
-                <div class="status-badge"
-                    style="background-color:rgba(20,184,166,0.1); color:#2dd4bf; border-color:rgba(20,184,166,0.2);"
-                    id="pipeline-status">Idle</div>
-            </div>
+        <!-- 3. Visual Simulation Showcase: Side-by-Side Dual Mockup -->
+        <section class="showcase-section">
+            <div class="showcase-card">
+                <div class="showcase-header">
+                    <div class="showcase-title-block">
+                        <h3>
+                            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--accent-teal);">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            The Frictionless Client Dropzone Simulation
+                        </h3>
+                        <p>Watch how automated SMS collection intercepts expenses and rejects illegible receipts before reaching your firm.</p>
+                    </div>
 
-            <!-- Empty State -->
-            <div class="empty-state" id="empty-view">
-                <div class="empty-icon">📂</div>
-                <p>Drag files or click the demo button to view the renaming and categorization pipeline.</p>
-            </div>
-
-            <!-- Processing Loader State -->
-            <div class="processing-container" id="loading-view">
-                <div class="spinner"></div>
-                <div class="loader-status" id="loading-text">Reading headers...</div>
-            </div>
-
-            <!-- Processed Output State -->
-            <div class="results-container" id="results-view">
-                <div class="file-list" id="processed-files">
-                    <!-- File item elements injected via JS -->
+                    <div class="sim-controller-pills">
+                        <button class="controller-btn active" id="mode-auto-btn">Auto Loop</button>
+                        <button class="controller-btn" id="mode-blur-btn">Test Blurry (Fails)</button>
+                        <button class="controller-btn" id="mode-clear-btn">Test Compliant (Passes)</button>
+                    </div>
                 </div>
 
-                <div class="actions-panel">
-                    <button class="action-btn btn-secondary" id="sync-drive-btn">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24" style="color:var(--primary);">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                <div class="dual-simulation-grid">
+                    <!-- Left: Simulated SMS Mobile View -->
+                    <div class="phone-mockup-wrapper">
+                        <div class="phone-top-notch">
+                            <span class="camera-lens"></span>
+                        </div>
+                        <div class="phone-header">
+                            <div class="avatar-circle">LD</div>
+                            <div class="phone-contact-name">LedgerDrop Automated Intake</div>
+                            <div class="phone-contact-sub">Secure SMS Dispatch &bull; Acme Corp</div>
+                        </div>
+
+                        <div class="sms-messages-container">
+                            <div class="sms-timestamp">Today 12:41 PM</div>
+
+                            <div class="sms-bubble">
+                                Hi Sarah, please snap a quick photo of your lunch receipt from yesterday for <strong>Acme Corp</strong>:
+                                <div class="sms-link-card" id="sim-magic-link-click">
+                                    <div class="sms-link-icon">⚡</div>
+                                    <div class="sms-link-meta">
+                                        <div class="sms-link-url">ledgerdrop.io/m/8x29f</div>
+                                        <div class="sms-link-desc">1-Click Dropzone (No App Required)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="phone-quick-reply">
+                            <div class="quick-input-placeholder">Tap magic link to upload receipt...</div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Magic Link Dropzone & Real-Time Legibility Rejection -->
+                    <div class="dropzone-mockup-wrapper">
+                        <div class="browser-bar">
+                            <div class="browser-dots">
+                                <span class="b-dot b-dot-1"></span>
+                                <span class="b-dot b-dot-2"></span>
+                                <span class="b-dot b-dot-3"></span>
+                            </div>
+                            <div class="browser-address">
+                                <span class="lock-icon">🔒</span>
+                                <span>ledgerdrop.io/m/8x29f</span>
+                            </div>
+                            <span style="font-size:11px; color:var(--text-muted);">256-Bit SSL</span>
+                        </div>
+
+                        <div class="dropzone-body">
+                            <div class="client-context-bar">
+                                <div>
+                                    <div class="client-info-firm">Prepared for Pinnacle Bookkeeping</div>
+                                    <div class="client-info-client">Acme Corp &bull; October Intake</div>
+                                </div>
+                                <span class="token-expiry-badge">Expires in 23h 59m</span>
+                            </div>
+
+                            <!-- Interactive Stage Container -->
+                            <div class="stage-box" id="sim-stage-box">
+                                <div class="scanner-beam" id="sim-scanner-beam"></div>
+
+                                <!-- Receipt Visual -->
+                                <div class="receipt-preview-card" id="sim-receipt-card">
+                                    <div class="receipt-header-line"></div>
+                                    <div class="receipt-mock-row"></div>
+                                    <div class="receipt-mock-row short"></div>
+                                    <div class="receipt-mock-row"></div>
+                                    <div class="receipt-mock-total">
+                                        <span>TOTAL</span>
+                                        <span id="receipt-total-label">$148.20</span>
+                                    </div>
+                                </div>
+
+                                <!-- Dynamic State Banners -->
+                                <div class="rejection-banner" id="sim-rejection-banner">
+                                    ⚠️ Too blurry. Please retake for IRS compliance
+                                    <span class="rejection-reason">Detected blur index &lt; 35% &bull; Merchant name & tax total unreadable</span>
+                                </div>
+
+                                <div class="success-banner" id="sim-success-banner">
+                                    ✓ IRS Legibility Verified & Parsed
+                                    <div class="metadata-tags">
+                                        <span>[Vendor: Home Depot]</span>
+                                        <span>[Amount: $148.20]</span>
+                                        <span>[Audit: Pass]</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Stage Action Controls -->
+                            <div class="mockup-actions-strip">
+                                <span style="font-size:12px; color:var(--text-muted);" id="sim-status-label">
+                                    Simulating: Real-Time Client Upload
+                                </span>
+                                <span class="sim-live-indicator">
+                                    <span class="live-dot"></span> Live Interactive Dropzone
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Value Pillars for Boutique Bookkeeping Firms -->
+        <section class="pillars-section">
+            <div class="section-header">
+                <span class="section-badge">Built for Modern Bookkeepers</span>
+                <h2 class="section-title">The Active Collection Layer</h2>
+                <p class="section-desc">Why boutique firms are replacing portal logins and WhatsApp threads with automated SMS magic links.</p>
+            </div>
+
+            <div class="pillars-grid">
+                <div class="pillar-card">
+                    <div class="pillar-icon-box">💬</div>
+                    <h3 class="pillar-heading">Zero App Friction</h3>
+                    <p class="pillar-body">
+                        Eliminate portal fatigue, forgotten login credentials, and app store downloads. LedgerDrop delivers secure, single-use magic links directly via SMS—allowing clients to snap and submit receipts in under 10 seconds.
+                    </p>
+                    <div class="pillar-metric">
+                        <span>⚡ Zero client login &bull; 1-tap photo upload</span>
+                    </div>
+                </div>
+
+                <div class="pillar-card">
+                    <div class="pillar-icon-box">🛡️</div>
+                    <h3 class="pillar-heading">Real-Time Legibility Filter</h3>
+                    <p class="pillar-body">
+                        Stop receiving dark, cut-off, and blurry camera snaps at tax season. Our edge-validation model flags unreadable photos immediately to the client with instant retake instructions.
+                    </p>
+                    <div class="pillar-metric">
+                        <span>✓ 100% IRS compliance legibility pass-rate</span>
+                    </div>
+                </div>
+
+                <div class="pillar-card">
+                    <div class="pillar-icon-box">📂</div>
+                    <h3 class="pillar-heading">Clean Ledger Ingestion</h3>
+                    <p class="pillar-body">
+                        Validated receipts are automatically classified, standardized to your firm's custom naming rules, and synced directly to Google Drive, QuickBooks Online, or Xero.
+                    </p>
+                    <div class="pillar-metric">
+                        <span>🔄 Zero manual renaming or filing required</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Preserved VIP Early Access Pricing Section -->
+        <section class="pricing-section">
+            <div class="pricing-card">
+                <div>
+                    <div class="pricing-badge">🔥 VIP Early Adopter Offer</div>
+                    <h2 class="pricing-title">Lock in 50% Lifetime Discount</h2>
+                    <p class="pricing-desc">
+                        Reserve your early access spot with a $19 fully-refundable deposit. Guarantees 50% off standard pricing forever upon official launch.
+                    </p>
+                </div>
+                <div class="pricing-action-box">
+                    <div class="price-tag">
+                        <span class="price-amount">$19</span>
+                        <span class="price-period">Refundable Deposit</span>
+                    </div>
+                    <a href="https://theopslabs.lemonsqueezy.com/checkout/buy/924a0d59-4185-46c5-9bb6-c6436192890b?embed=1"
+                        class="lemonsqueezy-button deposit-cta-main" onclick="logTelemetry('LEMON_SQUEEZY_PRICING_CLICK')">
+                        🔥 Reserve VIP Slot ($19 Deposit) →
+                    </a>
+                    <div class="refund-note">
+                        <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd"></path>
                         </svg>
-                        Sync to Google Drive
-                    </button>
-                    <button class="action-btn btn-primary" id="download-zip-btn">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                        </svg>
-                        Download Renamed ZIP
-                    </button>
+                        100% Refundable Deposit &bull; Instant Refund Prior to Launch
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
     </main>
 
-    <!-- VIP Early Access Deposit Pricing Section -->
-    <section class="pricing-section">
-        <div class="pricing-card">
-            <div>
-                <div class="pricing-badge">🔥 VIP Early Adopter Offer</div>
-                <h2 class="pricing-title">Lock in 50% Lifetime Discount</h2>
-                <p class="pricing-desc">
-                    Reserve your early access spot with a $19 fully-refundable deposit. Guarantees 50% off standard pricing forever upon official launch.
-                </p>
-            </div>
-            <div class="pricing-action-box">
-                <div class="price-tag">
-                    <span class="price-amount">$19</span>
-                    <span class="price-period">Refundable Deposit</span>
-                </div>
-                <a href="https://theopslabs.lemonsqueezy.com/checkout/buy/924a0d59-4185-46c5-9bb6-c6436192890b?embed=1" class="lemonsqueezy-button deposit-cta-main" onclick="logTelemetry('LEMON_SQUEEZY_PRICING_CLICK')">
-                    Reserve VIP Slot ($19 Deposit) →
-                </a>
-                <div class="refund-note">
-                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    100% Refundable Deposit &bull; Instant Refund Prior to Launch
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Lead Capture Modal Overlay -->
+    <!-- 6. Preserved Lead Capture Modal Overlay -->
     <div class="modal-overlay" id="lead-modal">
         <div class="modal-card">
             <button class="close-btn" id="modal-close">
@@ -1644,65 +1736,63 @@
                 </svg>
             </button>
 
-            <!-- Lead Form -->
+            <!-- Lead Form Content -->
             <div id="modal-form-content">
-                <h3 class="modal-title">Get Free Early Access</h3>
+                <h3 class="modal-title">Apply for Early Access</h3>
                 <p class="modal-desc">
-                    This is a functional prototype. Enter your email to download your formatted files and get notified
-                    when the Google Drive auto-sync launches.
+                    LedgerDrop is currently onboarding selected boutique bookkeeping firms into our private beta. Enter your email to claim your firm's spot.
                 </p>
 
                 <div class="form-group">
-                    <label class="form-label" for="email">Work Email</label>
-                    <input type="email" class="email-input" id="email-field" placeholder="you@firm.com" required>
+                    <label class="form-label" for="email-field">Work Email</label>
+                    <input type="email" class="email-input" id="email-field" placeholder="you@bookkeepingfirm.com" required>
                 </div>
 
-                <label class="form-label">Which integrations do you need first?</label>
+                <label class="form-label">Which software does your firm use?</label>
                 <div class="checkbox-grid">
                     <div class="checkbox-card" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" name="integration" value="Google Drive">
+                        <input type="checkbox" name="integration" value="QuickBooks Online">
                         <div class="custom-checkbox"></div>
-                        <span class="checkbox-label">Google Drive</span>
-                    </div>
-                    <div class="checkbox-card" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" name="integration" value="OneDrive">
-                        <div class="custom-checkbox"></div>
-                        <span class="checkbox-label">OneDrive</span>
-                    </div>
-                    <div class="checkbox-card" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" name="integration" value="QuickBooks">
-                        <div class="custom-checkbox"></div>
-                        <span class="checkbox-label">QuickBooks</span>
+                        <span class="checkbox-label">QuickBooks Online</span>
                     </div>
                     <div class="checkbox-card" onclick="toggleCheckbox(this)">
                         <input type="checkbox" name="integration" value="Xero">
                         <div class="custom-checkbox"></div>
                         <span class="checkbox-label">Xero</span>
                     </div>
+                    <div class="checkbox-card" onclick="toggleCheckbox(this)">
+                        <input type="checkbox" name="integration" value="Google Drive">
+                        <div class="custom-checkbox"></div>
+                        <span class="checkbox-label">Google Drive</span>
+                    </div>
+                    <div class="checkbox-card" onclick="toggleCheckbox(this)">
+                        <input type="checkbox" name="integration" value="OneDrive / Sharepoint">
+                        <div class="custom-checkbox"></div>
+                        <span class="checkbox-label">OneDrive</span>
+                    </div>
                 </div>
 
-                <button class="submit-btn" id="submit-btn">Unlock Free Access</button>
+                <button class="submit-btn" id="submit-btn">Submit Early Access Request</button>
             </div>
 
-            <!-- Success State -->
+            <!-- Success State Content -->
             <div class="success-state" id="modal-success-content">
                 <div class="success-circle">✓</div>
-                <h3 class="modal-title">You're On the List!</h3>
+                <h3 class="modal-title">Request Received!</h3>
                 <p class="modal-desc">
-                    Thank you! Your preferences have been saved. LedgerDrop is currently in private preview — we’ll
-                    notify you as soon as the automated Google Drive & ZIP sync goes live.
+                    Thank you! Your firm has been prioritized for our upcoming beta wave. We will reach out shortly with your SMS intake credentials.
                 </p>
 
                 <!-- Post-Submission Feedback Prompt -->
                 <div class="feedback-box" style="margin-top: 16px; width: 100%; text-align: left;">
                     <label class="form-label" for="feedback-field"
                         style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px;">
-                        What is your biggest document bottleneck right now? (Optional)
+                        What is your firm's biggest receipt bottleneck right now? (Optional)
                     </label>
                     <textarea id="feedback-field" rows="2" class="email-input" style="resize: none;"
-                        placeholder="e.g. Clients texting blurry receipts..."></textarea>
-                    <button class="action-btn btn-secondary" id="feedback-submit-btn"
-                        style="margin-top: 8px; width: 100%;">
+                        placeholder="e.g. Clients texting blurry gas receipts..."></textarea>
+                    <button class="submit-btn" id="feedback-submit-btn"
+                        style="margin-top: 8px; width: 100%; background: #334155;">
                         Send Feedback
                     </button>
                 </div>
@@ -1710,24 +1800,29 @@
         </div>
     </div>
 
-    <script>
-        // Google Forms/Sheets Integration Config
-        // Instructions: Set up a Google Form, inspect entry IDs, and paste them below to collect emails in a Google Sheet.
-        const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeD_acE51kkbG5RUBNZcxrnf6EPp-dHvUUZwAKKg5j9WXDLBg/formResponse"; // e.g. "https://docs.google.com/forms/d/e/1FAIpQLSf.../formResponse"
-        const EMAIL_ENTRY_ID = "entry.944497158";  // e.g. "entry.123456789"
-        const INTEGRATIONS_ENTRY_ID = "entry.2142902546"; // e.g. "entry.987654321"
+    <!-- 7. Footer -->
+    <footer>
+        <p>&copy; 2026 LedgerDrop. All rights reserved. Built for boutique bookkeeping firms seeking active collection.</p>
+    </footer>
 
-        // Telemetry tracking configurations (saves to a second Google Sheet)
+    <!-- 8. Preserved Webhook Logic & Interactive Simulation Scripts -->
+    <script>
+        // Google Forms/Sheets Integration Config (PRESERVED EXACT ENDPOINTS)
+        const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeD_acE51kkbG5RUBNZcxrnf6EPp-dHvUUZwAKKg5j9WXDLBg/formResponse";
+        const EMAIL_ENTRY_ID = "entry.944497158";
+        const INTEGRATIONS_ENTRY_ID = "entry.2142902546";
+
+        // Telemetry tracking configurations (PRESERVED EXACT ENDPOINTS)
         const TELEMETRY_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdvx87C5lYmXdEqzlMQX8n5TN5AEf6YBsvOK_up7tCpGqVg6A/formResponse";
         const TELEMETRY_EVENT_ID = "entry.1218034351";
         const TELEMETRY_REF_ID = "entry.1210874588";
         const FEEDBACK_ENTRY_ID = "entry.1894598882";
 
-        // Extract referrer from URL parameters (e.g. ?ref=tessera)
+        // Extract referrer from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const referrerSource = urlParams.get('ref') || 'direct';
 
-        // Log an interaction event to Google Sheets telemetry database
+        // Log interaction events to telemetry database
         async function logTelemetry(eventType) {
             if (!TELEMETRY_FORM_URL) return;
             const payload = new URLSearchParams();
@@ -1749,199 +1844,121 @@
         // Fire initial page view event on load
         logTelemetry('PAGE_VIEW');
 
-        // Core Elements
-        const dropzone = document.getElementById('dropzone');
-        const demoTrigger = document.getElementById('demo-trigger');
-        const emptyView = document.getElementById('empty-view');
-        const loadingView = document.getElementById('loading-view');
-        const resultsView = document.getElementById('results-view');
-        const loadingText = document.getElementById('loading-text');
-        const pipelineStatus = document.getElementById('pipeline-status');
-        const processedFiles = document.getElementById('processed-files');
-
-        // Modal elements
+        // Modal Elements
         const leadModal = document.getElementById('lead-modal');
         const modalClose = document.getElementById('modal-close');
         const submitBtn = document.getElementById('submit-btn');
-        const syncDriveBtn = document.getElementById('sync-drive-btn');
-        const downloadZipBtn = document.getElementById('download-zip-btn');
         const emailField = document.getElementById('email-field');
         const formContent = document.getElementById('modal-form-content');
         const successContent = document.getElementById('modal-success-content');
-
-        // Prevent default drag behaviors globally to stop the browser from opening files in the tab
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            window.addEventListener(eventName, (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            }, false);
-        });
-
-        // Create a hidden file input element for direct file picking (failsafe for drag-and-drop security blocks)
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = '.pdf,.jpg,.jpeg,.png,.xlsx,.csv';
-        fileInput.multiple = true;
-        fileInput.style.display = 'none';
-        document.body.appendChild(fileInput);
-
-        // Click on dropzone triggers the file picker (except when clicking the demo button)
-        dropzone.addEventListener('click', (e) => {
-            if (e.target !== demoTrigger) {
-                fileInput.click();
-            }
-        });
-
-        // Handle chosen files via file selector
-        fileInput.addEventListener('change', () => {
-            const files = fileInput.files;
-            console.log('Selected files via file chooser:', files);
-            if (files && files.length > 0) {
-                logTelemetry('FILE_UPLOAD');
-                simulateProcessing(Array.from(files));
-            }
-        });
-
-        // Toggle hover state class on dropzone
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropzone.addEventListener(eventName, (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                dropzone.classList.add('dragover');
-            }, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropzone.addEventListener(eventName, (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                dropzone.classList.remove('dragover');
-            }, false);
-        });
-
-        // Handle dropped files
-        dropzone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const files = e.dataTransfer.files;
-            console.log('Dropped files via drag-and-drop:', files);
-            if (files && files.length > 0) {
-                logTelemetry('FILE_UPLOAD');
-                simulateProcessing(Array.from(files));
-            }
-        }, false);
-
-        // Trigger simulation with mock data
-        demoTrigger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            logTelemetry('DEMO_PLAY');
-            simulateProcessing([
-                { name: 'IMG_9821.jpg' },
-                { name: 'client_invoice_unnamed.pdf' },
-                { name: 'chase-stmt-scan.pdf' }
-            ]);
-        });
-
-        // Modal Action handlers
-        syncDriveBtn.addEventListener('click', () => openModal('SYNC_DRIVE_CLICK'));
-        downloadZipBtn.addEventListener('click', () => openModal('DOWNLOAD_ZIP_CLICK'));
-        modalClose.addEventListener('click', () => closeModal());
-
-        // Checkbox Helper
-        function toggleCheckbox(element) {
-            const checkbox = element.querySelector('input[type="checkbox"]');
-            checkbox.checked = !checkbox.checked;
-            element.classList.toggle('checked', checkbox.checked);
-        }
+        const navCtaBtn = document.getElementById('nav-cta-btn');
+        const heroCtaBtn = document.getElementById('hero-cta-btn');
 
         function openModal(triggerType) {
-            leadModal.classList.add('active');
-            logTelemetry(triggerType || 'FORM_OPEN');
+            if (leadModal) {
+                leadModal.classList.add('active');
+                logTelemetry(triggerType || 'FORM_OPEN');
+            }
         }
 
         function closeModal() {
-            leadModal.classList.remove('active');
-            // reset form after transition
-            setTimeout(() => {
-                formContent.style.display = 'block';
-                successContent.style.display = 'none';
-                emailField.value = '';
-                document.querySelectorAll('.checkbox-card').forEach(card => {
-                    card.classList.remove('checked');
-                    card.querySelector('input').checked = false;
-                });
-                const fbField = document.getElementById('feedback-field');
-                const fbBtn = document.getElementById('feedback-submit-btn');
-                if (fbField) fbField.value = '';
-                if (fbBtn) {
-                    fbBtn.innerText = 'Send Feedback';
-                    fbBtn.disabled = false;
-                }
-            }, 300);
+            if (leadModal) {
+                leadModal.classList.remove('active');
+                setTimeout(() => {
+                    if (formContent) formContent.style.display = 'block';
+                    if (successContent) successContent.style.display = 'none';
+                    if (emailField) emailField.value = '';
+                    document.querySelectorAll('.checkbox-card').forEach(card => {
+                        card.classList.remove('checked');
+                        const input = card.querySelector('input');
+                        if (input) input.checked = false;
+                    });
+                    const fbField = document.getElementById('feedback-field');
+                    const fbBtn = document.getElementById('feedback-submit-btn');
+                    if (fbField) fbField.value = '';
+                    if (fbBtn) {
+                        fbBtn.innerText = 'Send Feedback';
+                        fbBtn.disabled = false;
+                    }
+                }, 300);
+            }
         }
 
-        // Form submission handler
-        submitBtn.addEventListener('click', async () => {
-            const email = emailField.value.trim();
-            if (!email || !email.includes('@')) {
-                emailField.style.borderColor = 'red';
-                emailField.focus();
-                return;
+        if (navCtaBtn) navCtaBtn.addEventListener('click', () => openModal('NAV_CTA'));
+        if (heroCtaBtn) heroCtaBtn.addEventListener('click', () => openModal('HERO_CTA'));
+        if (modalClose) modalClose.addEventListener('click', closeModal);
+
+        // Checkbox toggle helper
+        function toggleCheckbox(element) {
+            const checkbox = element.querySelector('input[type="checkbox"]');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                element.classList.toggle('checked', checkbox.checked);
             }
-            emailField.style.borderColor = '';
+        }
 
-            const selectedIntegrations = Array.from(document.querySelectorAll('input[name="integration"]:checked')).map(el => el.value);
-            const integrationsText = selectedIntegrations.join(', ') + ` [ref: ${referrerSource}]`;
-
-            // Console logger for validation checking
-            console.log('Validation Submission:', {
-                email: email,
-                integrations: integrationsText,
-                timestamp: new Date().toISOString()
-            });
-
-            // Log submission telemetry
-            logTelemetry('LEAD_SUBMIT');
-
-            // Submit payload to Google Sheets via Google Forms response endpoint
-            if (GOOGLE_FORM_URL) {
-                const formData = new URLSearchParams();
-                formData.append(EMAIL_ENTRY_ID, email);
-                formData.append(INTEGRATIONS_ENTRY_ID, integrationsText);
-
-                try {
-                    await fetch(GOOGLE_FORM_URL, {
-                        method: 'POST',
-                        mode: 'no-cors', // Bypasses CORS policy checks on Google Forms endpoint
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: formData.toString()
-                    });
-                    console.log('Lead successfully synced to Google Sheet.');
-                } catch (err) {
-                    console.error('Error syncing lead to Google Sheet:', err);
+        // Form submission handler (PRESERVED GOOGLE FORM POST WEBHOOK)
+        if (submitBtn) {
+            submitBtn.addEventListener('click', async () => {
+                const email = emailField ? emailField.value.trim() : '';
+                if (!email || !email.includes('@')) {
+                    if (emailField) {
+                        emailField.style.borderColor = 'red';
+                        emailField.focus();
+                    }
+                    return;
                 }
-            }
+                if (emailField) emailField.style.borderColor = '';
 
-            // Transition to Success State
-            formContent.style.display = 'none';
-            successContent.style.display = 'flex';
-        });
+                const selectedIntegrations = Array.from(document.querySelectorAll('input[name="integration"]:checked')).map(el => el.value);
+                const integrationsText = selectedIntegrations.join(', ') + ` [ref: ${referrerSource}]`;
 
-        // Post-submission optional feedback handler
+                console.log('Lead Submission Payload:', {
+                    email: email,
+                    integrations: integrationsText,
+                    timestamp: new Date().toISOString()
+                });
+
+                logTelemetry('LEAD_SUBMIT');
+
+                if (GOOGLE_FORM_URL) {
+                    const formData = new URLSearchParams();
+                    formData.append(EMAIL_ENTRY_ID, email);
+                    formData.append(INTEGRATIONS_ENTRY_ID, integrationsText);
+
+                    try {
+                        await fetch(GOOGLE_FORM_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: formData.toString()
+                        });
+                        console.log('Lead successfully synced to Google Sheet.');
+                    } catch (err) {
+                        console.error('Error syncing lead to Google Sheet:', err);
+                    }
+                }
+
+                if (formContent) formContent.style.display = 'none';
+                if (successContent) successContent.style.display = 'flex';
+            });
+        }
+
+        // Optional post-submission feedback handler
         const feedbackSubmitBtn = document.getElementById('feedback-submit-btn');
         if (feedbackSubmitBtn) {
             feedbackSubmitBtn.addEventListener('click', async () => {
                 const feedbackText = document.getElementById('feedback-field').value.trim();
-                const email = emailField.value.trim();
+                const email = emailField ? emailField.value.trim() : 'anonymous';
                 if (!feedbackText || !GOOGLE_FORM_URL) return;
 
                 feedbackSubmitBtn.disabled = true;
                 feedbackSubmitBtn.innerText = 'Sending...';
 
                 const feedbackData = new URLSearchParams();
-                feedbackData.append(EMAIL_ENTRY_ID, email || 'anonymous');
+                feedbackData.append(EMAIL_ENTRY_ID, email);
                 feedbackData.append(INTEGRATIONS_ENTRY_ID, `[FEEDBACK_UPDATE] ref: ${referrerSource}`);
                 if (typeof FEEDBACK_ENTRY_ID !== 'undefined' && FEEDBACK_ENTRY_ID) {
                     feedbackData.append(FEEDBACK_ENTRY_ID, feedbackText);
@@ -1954,7 +1971,6 @@
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: feedbackData.toString()
                     });
-                    console.log('Feedback successfully synced to Google Sheet.');
                     feedbackSubmitBtn.innerText = 'Feedback Sent ✓';
                 } catch (err) {
                     console.error('Error sending feedback:', err);
@@ -1964,455 +1980,133 @@
             });
         }
 
-        // Reads text-based files (like CSV/XLSX mock sheets) to dynamically parse values and calculate sums
-        async function analyzeFileContent(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const text = e.target.result;
-                    let parsedData = { amount: null, date: null, vendor: null };
+        // ==========================================
+        // DUAL SIMULATION CONTROLLER (SMS & BLUR REJECTION)
+        // ==========================================
+        const stageBox = document.getElementById('sim-stage-box');
+        const scannerBeam = document.getElementById('sim-scanner-beam');
+        const receiptCard = document.getElementById('sim-receipt-card');
+        const rejectionBanner = document.getElementById('sim-rejection-banner');
+        const successBanner = document.getElementById('sim-success-banner');
+        const statusLabel = document.getElementById('sim-status-label');
+        const modeAutoBtn = document.getElementById('mode-auto-btn');
+        const modeBlurBtn = document.getElementById('mode-blur-btn');
+        const modeClearBtn = document.getElementById('mode-clear-btn');
+        const heroDemoTrigger = document.getElementById('hero-demo-trigger');
 
-                    // Remove UTF-8 BOM if present
-                    let cleanText = text;
-                    if (cleanText.charCodeAt(0) === 0xFEFF) {
-                        cleanText = cleanText.substring(1);
-                    }
+        let simInterval = null;
+        let isAutoLoop = true;
 
-                    // Standard header search keys (for synonym mapping)
-                    const dateKeys = ['date', 'transaction date', 'timestamp', 'datetime', 'trans date'];
-                    const vendorKeys = ['vendor', 'payee', 'company', 'merchant', 'supplier', 'name', 'store'];
-                    const amountKeys = ['amount', 'total', 'sum', 'price', 'charge', 'value', 'cost'];
-
-                    // Split lines and filter out completely empty entries
-                    const rawLines = cleanText.split(/\r?\n/).map(line => line.trim()).filter(line => line !== "");
-
-                    if (rawLines.length > 1) {
-                        // Detect delimiter (comma, semicolon, or tab)
-                        const headerLine = rawLines[0];
-                        let delimiter = ",";
-                        if (headerLine.includes(";")) delimiter = ";";
-                        else if (headerLine.includes("\t")) delimiter = "\t";
-
-                        const lines = rawLines.map(line => line.split(delimiter));
-                        const headers = lines[0].map(h => h.replace(/['"]/g, '').trim().toLowerCase());
-
-                        // Find column indexes based on synonyms
-                        const dateIdx = headers.findIndex(h => dateKeys.includes(h));
-                        const vendorIdx = headers.findIndex(h => vendorKeys.includes(h));
-                        const amountIdx = headers.findIndex(h => amountKeys.includes(h));
-
-                        // 1. Calculate sum of transaction amount columns
-                        if (amountIdx !== -1) {
-                            let total = 0;
-                            let validRowFound = false;
-                            for (let i = 1; i < lines.length; i++) {
-                                const row = lines[i];
-                                if (row.length > amountIdx) {
-                                    const rawVal = row[amountIdx].replace(/['"]/g, '').trim();
-                                    // Strip currency symbols and whitespace, keep digits, decimal points, and signs
-                                    const cleanVal = rawVal.replace(/[^0-9.-]/g, '');
-                                    const val = parseFloat(cleanVal);
-                                    if (!isNaN(val)) {
-                                        total += val;
-                                        validRowFound = true;
-                                    }
-                                }
-                            }
-                            if (validRowFound) {
-                                parsedData.amount = total.toFixed(2);
-                            }
-                        }
-
-                        // 2. Extract first valid transaction date
-                        if (dateIdx !== -1 && lines.length > 1) {
-                            for (let i = 1; i < lines.length; i++) {
-                                const row = lines[i];
-                                if (row.length > dateIdx) {
-                                    const dateVal = row[dateIdx].replace(/['"]/g, '').trim();
-                                    if (dateVal && dateVal.match(/^\d{4}[-_./]\d{2}[-_./]\d{2}$/)) {
-                                        parsedData.date = dateVal;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-
-                        // 3. Extract vendor names and determine if multi-vendor
-                        if (vendorIdx !== -1 && lines.length > 1) {
-                            const uniqueVendors = new Set();
-                            for (let i = 1; i < lines.length; i++) {
-                                const row = lines[i];
-                                if (row.length > vendorIdx) {
-                                    const vendorVal = row[vendorIdx].replace(/['"]/g, '').trim();
-                                    if (vendorVal) {
-                                        uniqueVendors.add(vendorVal);
-                                    }
-                                }
-                            }
-                            if (uniqueVendors.size > 1) {
-                                parsedData.vendor = "MultiVendor_Ledger";
-                            } else if (uniqueVendors.size === 1) {
-                                parsedData.vendor = Array.from(uniqueVendors)[0];
-                            }
-                        }
-                    }
-
-                    // Generic regex matching for total amount in unstructured text files
-                    if (!parsedData.amount) {
-                        const totalMatch = cleanText.match(/(?:total|amount|sum|balance)\s*(?::|\$)?\s*(\d+\.\d{2})/i);
-                        if (totalMatch) {
-                            parsedData.amount = totalMatch[1];
-                        }
-                    }
-
-                    resolve(parsedData);
-                };
-
-                reader.onerror = function () {
-                    resolve({ amount: null, date: null, vendor: null });
-                };
-
-                // Read text/CSV/mock-xlsx structures. Skip binary images.
-                const ext = file.name.split('.').pop().toLowerCase();
-                if (['xlsx', 'csv', 'txt', 'json'].includes(ext)) {
-                    reader.readAsText(file);
-                } else {
-                    resolve({ amount: null, date: null, vendor: null });
-                }
-            });
-        }
-
-        // Simulated logic sequence
-        async function simulateProcessing(files) {
-            // UI States
-            emptyView.style.display = 'none';
-            resultsView.style.display = 'none';
-            loadingView.style.display = 'flex';
-            pipelineStatus.innerText = 'Analyzing';
-            loadingText.innerText = 'Reading file binary headers...';
-            pipelineStatus.style.color = '#f59e0b';
-            pipelineStatus.style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
-            pipelineStatus.style.borderColor = 'rgba(245, 158, 11, 0.2)';
-
-            const statusUpdates = [
-                'Reading file binary headers...',
-                'Detecting text layout geometries...',
-                'Performing OCR metadata extraction...',
-                'Applying vertical taxonomy renaming rule...'
-            ];
-
-            let step = 0;
-            const textInterval = setInterval(() => {
-                if (step < statusUpdates.length) {
-                    loadingText.innerText = statusUpdates[step];
-                    step++;
-                }
-            }, 450);
-
-            // Read and parse file contents asynchronously
-            const fileDataList = await Promise.all(files.map(async (file) => {
-                let parsed = { amount: null, date: null, vendor: null };
-                if (file instanceof File) {
-                    parsed = await analyzeFileContent(file);
-                }
-                return {
-                    name: file.name,
-                    parsed: parsed
-                };
-            }));
+        function runBlurRejectionSimulation() {
+            if (!stageBox) return;
+            // Reset state
+            stageBox.className = 'stage-box';
+            if (scannerBeam) scannerBeam.classList.add('active');
+            if (rejectionBanner) rejectionBanner.style.display = 'none';
+            if (successBanner) successBanner.style.display = 'none';
+            if (receiptCard) {
+                receiptCard.className = 'receipt-preview-card blurred-photo';
+                receiptCard.style.transform = 'scale(0.95)';
+            }
+            if (statusLabel) statusLabel.innerText = 'Client uploaded photo. Scanning sharpness...';
 
             setTimeout(() => {
-                clearInterval(textInterval);
-                renderResults(fileDataList);
-            }, 1900);
+                if (scannerBeam) scannerBeam.classList.remove('active');
+                if (stageBox) stageBox.className = 'stage-box state-rejected';
+                if (rejectionBanner) rejectionBanner.style.display = 'block';
+                if (statusLabel) statusLabel.innerText = 'Action: Rejected. Client prompted to retake.';
+            }, 1400);
         }
 
-        // Heuristic Parser: Dynamically extracts dates, vendors, and types to simulate intelligent OCR
-        function getRenameMapping(filename, parsedData) {
-            const lower = filename.toLowerCase();
-            const cleanName = filename.replace(/\.[^/.]+$/, ""); // Strip file extension
-
-            // Raw Upload Mock OCR Presets (Simulates Server-side OCR text extraction for physical image/PDF contents)
-            const ocrPresets = {
-                "img_0982": { date: "2025-05-14", vendor: "Shell", docType: "Receipt", amount: "48.20" },
-                "img_1043": { date: "2025-05-18", vendor: "Subway", docType: "Receipt", amount: "12.45" },
-                "photo_may_14_2025": { date: "2025-05-14", vendor: "Staples", docType: "Receipt", amount: "124.99" },
-                "dcim_00491": { date: "2025-05-18", vendor: "HomeDepot", docType: "Receipt", amount: "248.50" },
-                "screenshot_20250516": { date: "2025-05-16", vendor: "Merchant", docType: "Receipt", amount: "35.00" },
-                "attachment_1": { date: "2025-06-01", vendor: "AdobeSystems", docType: "Invoice", amount: "15.49" },
-                "invoice_download": { date: "2025-06-10", vendor: "AmazonWebServices", docType: "Invoice", amount: "145.20" },
-                "document": { date: "2025-06-15", vendor: "Microsoft365", docType: "Invoice", amount: "99.00" },
-                "bill_june": { date: "2025-06-12", vendor: "ATT", docType: "Invoice", amount: "89.99" },
-                "scan_doc_0412": { date: "2025-06-01", vendor: "ChaseBank", docType: "Statement", amount: "1450.00" },
-                "stmt_202506": { date: "2025-06-30", vendor: "ChaseCreditCard", docType: "Statement", amount: "3240.15" },
-                "w9_vendor": { date: "2025-01-15", vendor: "IRS", docType: "TaxForm_W9", amount: "" },
-                "scan_941_2025": { date: "2025-04-30", vendor: "IRS", docType: "TaxForm_941", amount: "" },
-                "unnamed_ledger": { date: "2025-05-14", vendor: "MultiVendor", docType: "Statement", amount: "98.69" },
-                "payroll_draft": { date: "2025-06-15", vendor: "Payroll", docType: "Journal", amount: "4500.00" },
-                "receipt_2025": { date: "2025-05-22", vendor: "Uber", docType: "Receipt", amount: "24.50" }
-            };
-
-            const presetKey = cleanName.toLowerCase();
-            if (ocrPresets[presetKey]) {
-                const p = ocrPresets[presetKey];
-                const amtFormatted = p.amount ? `_$${p.amount}` : '';
-                return `${p.date}_${p.vendor}_${p.docType}${amtFormatted}.pdf`;
+        function runCompliantSimulation() {
+            if (!stageBox) return;
+            // Reset state
+            stageBox.className = 'stage-box';
+            if (scannerBeam) scannerBeam.classList.add('active');
+            if (rejectionBanner) rejectionBanner.style.display = 'none';
+            if (successBanner) successBanner.style.display = 'none';
+            if (receiptCard) {
+                receiptCard.className = 'receipt-preview-card sharp-photo';
+                receiptCard.style.transform = 'scale(1)';
             }
+            if (statusLabel) statusLabel.innerText = 'Client re-taking photo. Analyzing compliance...';
 
-            // 1. Heuristic Date Extraction (Matches YYYY-MM-DD, MM-DD-YYYY, or YYYYMMDD)
-            let dateStr = parsedData && parsedData.date ? parsedData.date : "";
-            if (!dateStr) {
-                const dateRegexes = [
-                    /\b(\d{4})[-_./](\d{1,2})[-_./](\d{1,2})\b/, // YYYY-MM-DD
-                    /\b(\d{1,2})[-_./](\d{1,2})[-_./](\d{4})\b/, // MM-DD-YYYY
-                    /\b(\d{8})\b/ // YYYYMMDD
-                ];
-                let match;
-                for (let regex of dateRegexes) {
-                    match = cleanName.match(regex);
-                    if (match) break;
-                }
-                if (match) {
-                    if (match[1].length === 4) { // YYYY-MM-DD
-                        dateStr = `${match[1]}-${match[2].padStart(2, '0')}-${match[3].padStart(2, '0')}`;
-                    } else if (match[3] && match[3].length === 4) { // MM-DD-YYYY
-                        dateStr = `${match[3]}-${match[1].padStart(2, '0')}-${match[2].padStart(2, '0')}`;
-                    } else if (match[1].length === 8) { // YYYYMMDD
-                        dateStr = `${match[1].substring(0, 4)}-${match[1].substring(4, 6)}-${match[1].substring(6, 8)}`;
-                    }
-                }
-            }
-
-            // Fallback to current local date if no date string is matched
-            if (!dateStr) {
-                const today = new Date();
-                const year = today.getFullYear();
-                const month = String(today.getMonth() + 1).padStart(2, '0');
-                const day = String(today.getDate()).padStart(2, '0');
-                dateStr = `${year}-${month}-${day}`;
-            }
-
-            // 2. Heuristic Document Type Extraction
-            let docType = "Receipt";
-            if (lower.includes("invoice") || lower.includes("inv") || lower.includes("bill")) {
-                docType = "Invoice";
-            } else if (lower.includes("statement") || lower.includes("stmt") || lower.includes("report") || lower.includes("ledger")) {
-                docType = "Statement";
-            } else if (lower.includes("w9") || lower.includes("w-9") || lower.includes("tax")) {
-                docType = "TaxForm";
-            }
-
-            // 3. Heuristic Amount Extraction (looks for digits like 15.49 or 48_20)
-            let amountStr = parsedData && parsedData.amount ? parsedData.amount : "";
-            if (!amountStr) {
-                const amountMatch = cleanName.match(/\b\d+[\._]\d{2}\b/);
-                if (amountMatch) {
-                    amountStr = amountMatch[0].replace("_", ".");
-                } else {
-                    let hash = 0;
-                    for (let i = 0; i < cleanName.length; i++) {
-                        hash = cleanName.charCodeAt(i) + ((hash << 5) - hash);
-                    }
-                    const cents = String(Math.abs(hash % 100)).padStart(2, '0');
-                    const dollars = (Math.abs(hash % 150) + 4);
-                    amountStr = `${dollars}.${cents}`;
-                }
-            }
-
-            // 4. Heuristic Vendor Name Cleanup
-            let vendor = parsedData && parsedData.vendor ? parsedData.vendor : cleanName;
-            if (!parsedData || !parsedData.vendor) {
-                vendor = vendor.replace(/\b\d{4}[-_./]\d{1,2}[-_./]\d{1,2}\b/g, "");
-                vendor = vendor.replace(/\b\d{1,2}[-_./]\d{1,2}[-_./]\d{4}\b/g, "");
-                vendor = vendor.replace(/\b\d{8}\b/g, "");
-                vendor = vendor.replace(/\b\d+[\._]\d{2}\b/g, "");
-                vendor = vendor.replace(/(img|scan|photo|copy|attachment|file|draft|reconciled|unnamed|receipt|invoice|statement|ledger|bill|stmt|xlsx|csv)/gi, "");
-                vendor = vendor.replace(/[-_.]/g, " ").trim();
-
-                vendor = vendor.split(/\s+/).map(word => {
-                    if (!word) return "";
-                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-                }).filter(Boolean).join("");
-            } else {
-                vendor = vendor.replace(/[^a-zA-Z0-9]/g, "");
-            }
-
-            if (!vendor) {
-                vendor = "Vendor";
-            }
-
-            return `${dateStr}_${vendor}_${docType}_$${amountStr}.pdf`;
+            setTimeout(() => {
+                if (scannerBeam) scannerBeam.classList.remove('active');
+                if (stageBox) stageBox.className = 'stage-box state-passed';
+                if (successBanner) successBanner.style.display = 'block';
+                if (statusLabel) statusLabel.innerText = 'Verified IRS compliant! Extracted & routed to general ledger.';
+            }, 1400);
         }
 
-        function renderResults(fileDataList) {
-            loadingView.style.display = 'none';
-            resultsView.style.display = 'flex';
-            processedFiles.innerHTML = '';
+        function startAutoSimulation() {
+            stopAutoSimulation();
+            isAutoLoop = true;
+            if (modeAutoBtn) modeAutoBtn.classList.add('active');
+            if (modeBlurBtn) modeBlurBtn.classList.remove('active');
+            if (modeClearBtn) modeClearBtn.classList.remove('active');
 
-            pipelineStatus.innerText = 'Complete';
-            pipelineStatus.style.color = '#10b981';
-            pipelineStatus.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
-            pipelineStatus.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+            // Sequence: Run blur rejection -> wait -> run compliant -> repeat
+            runBlurRejectionSimulation();
+            simInterval = setInterval(() => {
+                runCompliantSimulation();
+                setTimeout(() => {
+                    if (isAutoLoop) runBlurRejectionSimulation();
+                }, 4000);
+            }, 8000);
+        }
 
-            fileDataList.forEach((data, index) => {
-                const renamed = getRenameMapping(data.name, data.parsed);
-                const ext = data.name.split('.').pop().toLowerCase();
-                const badgeText = ext === 'pdf' ? 'Renamed & Classified' : 'PDF Converted & Classified';
-                const badgeStyle = ext === 'pdf'
-                    ? 'color: #60a5fa; background-color: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.2);'
-                    : 'color: #10b981; background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2);';
+        function stopAutoSimulation() {
+            if (simInterval) {
+                clearInterval(simInterval);
+                simInterval = null;
+            }
+        }
 
-                const fileHtml = `
-                    <div class="file-item" style="animation-delay: ${index * 0.15}s">
-                        <div class="file-header">
-                            <span class="old-name">${data.name}</span>
-                            <span class="file-badge" style="${badgeStyle}">${badgeText}</span>
-                        </div>
-                        <div class="new-name-box">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <span class="new-name">${renamed}</span>
-                        </div>
-                    </div>
-                `;
-                processedFiles.insertAdjacentHTML('beforeend', fileHtml);
+        if (modeAutoBtn) modeAutoBtn.addEventListener('click', startAutoSimulation);
+
+        if (modeBlurBtn) {
+            modeBlurBtn.addEventListener('click', () => {
+                isAutoLoop = false;
+                stopAutoSimulation();
+                if (modeAutoBtn) modeAutoBtn.classList.remove('active');
+                if (modeBlurBtn) modeBlurBtn.classList.add('active');
+                if (modeClearBtn) modeClearBtn.classList.remove('active');
+                runBlurRejectionSimulation();
             });
         }
 
-        // Bypasses browser security blocks on file:// protocol for downloads by using a temporary canvas stream
-        function forceDownload(url, filename) {
-            const img = new Image();
-            img.crossOrigin = "Anonymous";
-            img.onload = function () {
-                try {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-                    const dataURL = canvas.toDataURL('image/png');
-                    const link = document.createElement('a');
-                    link.download = filename;
-                    link.href = dataURL;
-                    link.click();
-                } catch (e) {
-                    // Fallback to standard anchor navigation if canvas throws security/CORS errors on local FS
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = filename;
-                    link.target = '_blank';
-                    link.click();
-                }
-            };
-            img.onerror = function () {
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = filename;
-                link.target = '_blank';
-                link.click();
-            };
-            img.src = url;
+        if (modeClearBtn) {
+            modeClearBtn.addEventListener('click', () => {
+                isAutoLoop = false;
+                stopAutoSimulation();
+                if (modeAutoBtn) modeAutoBtn.classList.remove('active');
+                if (modeBlurBtn) modeBlurBtn.classList.remove('active');
+                if (modeClearBtn) modeClearBtn.classList.add('active');
+                runCompliantSimulation();
+            });
+        }
+        if (heroDemoTrigger) heroDemoTrigger.addEventListener('click', () => {
+            const showcaseEl = document.querySelector('.showcase-section');
+            if (showcaseEl) showcaseEl.scrollIntoView({ behavior: 'smooth' });
+            startAutoSimulation();
+        });
+
+        const simMagicLink = document.getElementById('sim-magic-link-click');
+        if (simMagicLink) {
+            simMagicLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                isAutoLoop = false;
+                stopAutoSimulation();
+                if (modeAutoBtn) modeAutoBtn.classList.remove('active');
+                if (modeBlurBtn) modeBlurBtn.classList.add('active');
+                if (modeClearBtn) modeClearBtn.classList.remove('active');
+                runBlurRejectionSimulation();
+            });
         }
 
-        // Mini Video Simulation Controller
-        (function initVideoSimulation() {
-            const cursor = document.getElementById('sim-cursor');
-            const dzView = document.getElementById('sim-dz-view');
-            const fmModal = document.getElementById('sim-fm-modal');
-            const procView = document.getElementById('sim-proc-view');
-            const procText = document.getElementById('sim-proc-text');
-            const resView = document.getElementById('sim-res-view');
-            const row2 = document.getElementById('fm-row-2');
-            const row3 = document.getElementById('fm-row-3');
-
-            if (!cursor || !dzView || !fmModal) return;
-
-            function runSimulationCycle() {
-                // Reset State
-                cursor.style.top = '75%';
-                cursor.style.left = '75%';
-                cursor.classList.remove('clicking');
-                dzView.style.display = 'block';
-                fmModal.style.display = 'none';
-                procView.style.display = 'none';
-                resView.style.display = 'none';
-                if (row2) row2.classList.remove('selected');
-                if (row3) row3.classList.remove('selected');
-
-                // Step 1: Move Cursor to "Select Files" button (0.8s)
-                setTimeout(() => {
-                    cursor.style.top = '58%';
-                    cursor.style.left = '52%';
-                }, 800);
-
-                // Step 2: Click button -> open File Manager Modal (1.6s)
-                setTimeout(() => {
-                    cursor.classList.add('clicking');
-                }, 1600);
-
-                setTimeout(() => {
-                    cursor.classList.remove('clicking');
-                    fmModal.style.display = 'flex';
-                    // Move cursor into modal
-                    cursor.style.top = '40%';
-                    cursor.style.left = '45%';
-                }, 1900);
-
-                // Step 3: Select raw files in modal (2.7s - 3.5s)
-                setTimeout(() => {
-                    cursor.classList.add('clicking');
-                    if (row2) row2.classList.add('selected');
-                }, 2700);
-
-                setTimeout(() => {
-                    cursor.classList.remove('clicking');
-                    cursor.style.top = '54%';
-                }, 3100);
-
-                setTimeout(() => {
-                    cursor.classList.add('clicking');
-                    if (row3) row3.classList.add('selected');
-                }, 3500);
-
-                // Step 4: Move cursor to "Open Selected" button and click (4.2s)
-                setTimeout(() => {
-                    cursor.classList.remove('clicking');
-                    cursor.style.top = '88%';
-                    cursor.style.left = '78%';
-                }, 4200);
-
-                setTimeout(() => {
-                    cursor.classList.add('clicking');
-                }, 4800);
-
-                // Step 5: Close Modal -> Show Processing (5.1s)
-                setTimeout(() => {
-                    cursor.classList.remove('clicking');
-                    fmModal.style.display = 'none';
-                    dzView.style.display = 'none';
-                    procView.style.display = 'flex';
-                    if (procText) procText.innerText = 'Reading binary headers...';
-                }, 5100);
-
-                setTimeout(() => {
-                    if (procText) procText.innerText = 'Applying vertical taxonomy renaming...';
-                }, 6000);
-
-                // Step 6: Show Green Highlighted Results (6.8s)
-                setTimeout(() => {
-                    procView.style.display = 'none';
-                    resView.style.display = 'flex';
-                    cursor.style.top = '75%';
-                    cursor.style.left = '75%';
-                }, 6800);
-            }
-
-            // Start loop and repeat every 10 seconds
-            runSimulationCycle();
-            setInterval(runSimulationCycle, 10000);
-        })();
+        // Initialize simulation on load
+        startAutoSimulation();
     </script>
 </body>
-
 </html>
