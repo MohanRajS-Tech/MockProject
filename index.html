@@ -183,7 +183,9 @@
         a.btn-vip-nav,
         a.btn-vip-nav:visited,
         a.btn-vip-nav:link,
-        a.btn-vip-nav:active {
+        a.btn-vip-nav:active,
+        a.btn-vip-nav:focus,
+        a.btn-vip-nav:focus-visible {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: #070a12 !important;
             border: 1px solid rgba(251, 191, 36, 0.6);
@@ -1195,7 +1197,9 @@
         a.deposit-cta-main,
         a.deposit-cta-main:visited,
         a.deposit-cta-main:link,
-        a.deposit-cta-main:active {
+        a.deposit-cta-main:active,
+        a.deposit-cta-main:focus,
+        a.deposit-cta-main:focus-visible {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: #070a12 !important;
             border: 1px solid rgba(251, 191, 36, 0.6);
@@ -1488,7 +1492,7 @@
             <span class="audience-pill">Active Collection Layer</span>
             <button class="btn-ghost-nav" id="nav-cta-btn" onclick="openModal('NAV_CTA')">Apply for Early Access</button>
             <a href="https://theopslabs.lemonsqueezy.com/checkout/buy/924a0d59-4185-46c5-9bb6-c6436192890b?embed=1"
-                class="lemonsqueezy-button btn-vip-nav" onclick="logTelemetry('LEMON_SQUEEZY_NAV_CLICK')">
+                class="lemonsqueezy-button btn-vip-nav" style="color: #070a12 !important;" onclick="logTelemetry('LEMON_SQUEEZY_NAV_CLICK')">
                 🔥 Reserve VIP Slot ($19)
             </a>
         </div>
@@ -1727,7 +1731,7 @@
                         <span class="price-period">Refundable Deposit</span>
                     </div>
                     <a href="https://theopslabs.lemonsqueezy.com/checkout/buy/924a0d59-4185-46c5-9bb6-c6436192890b?embed=1"
-                        class="lemonsqueezy-button deposit-cta-main" onclick="logTelemetry('LEMON_SQUEEZY_PRICING_CLICK')">
+                        class="lemonsqueezy-button deposit-cta-main" style="color: #070a12 !important;" onclick="logTelemetry('LEMON_SQUEEZY_PRICING_CLICK')">
                         🔥 Reserve VIP Slot ($19 Deposit) →
                     </a>
                     <div class="refund-note">
