@@ -1409,6 +1409,22 @@
             box-shadow: 0 6px 22px rgba(99, 102, 241, 0.5);
         }
 
+        .btn-spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            display: inline-block;
+            animation: btn-spin 0.7s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes btn-spin {
+            to { transform: rotate(360deg); }
+        }
+
         .success-state {
             display: none;
             flex-direction: column;
@@ -1795,6 +1811,10 @@
                         style="margin-top: 8px; width: 100%; background: #334155;">
                         Send Feedback
                     </button>
+                    <button type="button" id="feedback-skip-btn" onclick="closeModal()"
+                        style="background: transparent; border: none; color: #64748b; font-size: 0.82rem; margin-top: 10px; width: 100%; cursor: pointer; text-align: center; text-decoration: underline;">
+                        No thanks, close window
+                    </button>
                 </div>
             </div>
         </div>
@@ -1875,10 +1895,19 @@
                     });
                     const fbField = document.getElementById('feedback-field');
                     const fbBtn = document.getElementById('feedback-submit-btn');
-                    if (fbField) fbField.value = '';
+                    if (fbField) {
+                        fbField.value = '';
+                        fbField.style.borderColor = '';
+                    }
                     if (fbBtn) {
                         fbBtn.innerText = 'Send Feedback';
+                        fbBtn.style.background = '#334155';
+                        fbBtn.style.color = '#ffffff';
                         fbBtn.disabled = false;
+                    }
+                    if (submitBtn) {
+                        submitBtn.innerText = 'Submit Early Access Request';
+                        submitBtn.disabled = false;
                     }
                 }, 300);
             }
@@ -1903,7 +1932,7 @@
                 const email = emailField ? emailField.value.trim() : '';
                 if (!email || !email.includes('@')) {
                     if (emailField) {
-                        emailField.style.borderColor = 'red';
+                        emailField.style.borderColor = '#ef4444';
                         emailField.focus();
                     }
                     return;
@@ -1912,6 +1941,9 @@
 
                 const selectedIntegrations = Array.from(document.querySelectorAll('input[name="integration"]:checked')).map(el => el.value);
                 const integrationsText = selectedIntegrations.join(', ') + ` [ref: ${referrerSource}]`;
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="btn-spinner"></span> Submitting Request...';
 
                 console.log('Lead Submission Payload:', {
                     email: email,
@@ -1937,46 +1969,65 @@
                         });
                         console.log('Lead successfully synced to Google Sheet.');
                     } catch (err) {
-                        console.error('Error syncing lead to Google Sheet:', err);
+                        console.warn('Google Sheet lead sync notice:', err);
                     }
                 }
 
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Submit Early Access Request';
                 if (formContent) formContent.style.display = 'none';
                 if (successContent) successContent.style.display = 'flex';
             });
         }
 
-        // Optional post-submission feedback handler
+        // Optional post-submission feedback handler with loading spinner & auto-close
         const feedbackSubmitBtn = document.getElementById('feedback-submit-btn');
         if (feedbackSubmitBtn) {
             feedbackSubmitBtn.addEventListener('click', async () => {
-                const feedbackText = document.getElementById('feedback-field').value.trim();
+                const feedbackField = document.getElementById('feedback-field');
+                const feedbackText = feedbackField ? feedbackField.value.trim() : '';
                 const email = emailField ? emailField.value.trim() : 'anonymous';
-                if (!feedbackText || !GOOGLE_FORM_URL) return;
 
                 feedbackSubmitBtn.disabled = true;
-                feedbackSubmitBtn.innerText = 'Sending...';
 
-                const feedbackData = new URLSearchParams();
-                feedbackData.append(EMAIL_ENTRY_ID, email);
-                feedbackData.append(INTEGRATIONS_ENTRY_ID, `[FEEDBACK_UPDATE] ref: ${referrerSource}`);
-                if (typeof FEEDBACK_ENTRY_ID !== 'undefined' && FEEDBACK_ENTRY_ID) {
-                    feedbackData.append(FEEDBACK_ENTRY_ID, feedbackText);
+                if (!feedbackText) {
+                    feedbackSubmitBtn.innerHTML = '<span class="btn-spinner"></span> Closing...';
+                    setTimeout(() => {
+                        closeModal();
+                    }, 500);
+                    return;
                 }
 
-                try {
-                    await fetch(GOOGLE_FORM_URL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: feedbackData.toString()
-                    });
-                    feedbackSubmitBtn.innerText = 'Feedback Sent ✓';
-                } catch (err) {
-                    console.error('Error sending feedback:', err);
-                    feedbackSubmitBtn.disabled = false;
-                    feedbackSubmitBtn.innerText = 'Send Feedback';
+                feedbackSubmitBtn.innerHTML = '<span class="btn-spinner"></span> Sending Feedback...';
+
+                if (GOOGLE_FORM_URL) {
+                    const feedbackData = new URLSearchParams();
+                    feedbackData.append(EMAIL_ENTRY_ID, email);
+                    feedbackData.append(INTEGRATIONS_ENTRY_ID, `[FEEDBACK_UPDATE] ref: ${referrerSource}`);
+                    if (typeof FEEDBACK_ENTRY_ID !== 'undefined' && FEEDBACK_ENTRY_ID) {
+                        feedbackData.append(FEEDBACK_ENTRY_ID, feedbackText);
+                    }
+
+                    try {
+                        await fetch(GOOGLE_FORM_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: feedbackData.toString()
+                        });
+                        console.log('Feedback successfully synced to Google Sheet.');
+                    } catch (err) {
+                        console.warn('Feedback sync notice:', err);
+                    }
                 }
+
+                feedbackSubmitBtn.style.background = '#10b981';
+                feedbackSubmitBtn.style.color = '#ffffff';
+                feedbackSubmitBtn.innerHTML = 'Feedback Sent ✓ Closing...';
+
+                setTimeout(() => {
+                    closeModal();
+                }, 1200);
             });
         }
 
