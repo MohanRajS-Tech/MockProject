@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LedgerDrop - SMS Magic Link Receipt Collection for Bookkeeping Firms</title>
+    <title>LedgerDrop - 1-Tap Home-Screen Receipt Dropzone for Bookkeeping Firms</title>
     <!-- Modern Typography: Inter & Outfit & Fira Code -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -502,7 +502,7 @@
             }
         }
 
-        /* Panel 1: Simulated Client Smartphone / SMS */
+        /* Panel 1: Simulated Client Smartphone (Home Screen & 1-Tap Shortcut) */
         .phone-mockup-wrapper {
             background: #090d16;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -520,7 +520,7 @@
             height: 18px;
             background: #151d30;
             border-radius: 12px;
-            margin: 0 auto 16px auto;
+            margin: 0 auto 12px auto;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -534,235 +534,474 @@
             background: #0b0f19;
         }
 
-        .phone-header {
-            text-align: center;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            margin-bottom: 20px;
-        }
-
-        .avatar-circle {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+        .phone-status-bar {
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin: 0 auto 8px auto;
-            color: #fff;
-            font-weight: 700;
-            font-size: 15px;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
-        }
-
-        .phone-contact-name {
-            font-size: 13px;
+            justify-content: space-between;
+            padding: 0 8px 12px 8px;
+            font-size: 11px;
             font-weight: 600;
-            color: #ffffff;
+            color: #94a3b8;
+            letter-spacing: 0.2px;
         }
 
-        .phone-contact-sub {
+        .phone-status-icons {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10px;
+        }
+
+        .homescreen-header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .homescreen-time {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1;
+            letter-spacing: -0.5px;
+        }
+
+        .homescreen-date {
             font-size: 11px;
             color: var(--text-muted);
-        }
-
-        .sms-messages-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            padding: 0 4px;
-        }
-
-        .sms-timestamp {
-            font-size: 10px;
-            color: var(--text-muted);
-            text-align: center;
-            margin-bottom: 2px;
+            margin-top: 4px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .sms-bubble {
-            background: #1e293b;
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            border-radius: 16px 16px 16px 4px;
-            padding: 13px 15px;
-            font-size: 13px;
-            line-height: 1.5;
-            color: #e2e8f0;
-            max-width: 90%;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            position: relative;
+        .homescreen-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px 10px;
+            padding: 4px 6px;
+            margin-bottom: 18px;
         }
 
-        .sms-bubble strong {
-            color: #fff;
-        }
-
-        .sms-link-card {
-            margin-top: 10px;
-            background: rgba(11, 15, 25, 0.6);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 10px;
-            padding: 10px;
+        .phone-app-item {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            gap: 6px;
             text-decoration: none;
+            cursor: default;
         }
 
-        .sms-link-card:hover {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.1);
-            transform: scale(1.02);
-        }
-
-        .sms-link-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: rgba(99, 102, 241, 0.2);
-            color: #818cf8;
+        .phone-app-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 11px;
+            background: #1e293b;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
+            font-size: 20px;
+            color: #94a3b8;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transition: all 0.2s ease;
         }
 
-        .sms-link-meta {
-            min-width: 0;
-        }
-
-        .sms-link-url {
-            font-family: var(--font-mono);
-            font-size: 11px;
-            color: #38bdf8;
+        .phone-app-label {
+            font-size: 10px;
+            color: #cbd5e1;
             font-weight: 500;
+            text-align: center;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            max-width: 52px;
         }
 
-        .sms-link-desc {
-            font-size: 10px;
-            color: var(--text-muted);
+        /* Highlighted PWA Shortcut App */
+        .phone-app-item.active-shortcut {
+            cursor: pointer;
         }
 
-        .phone-quick-reply {
+        .phone-app-item.active-shortcut .phone-app-icon {
+            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            color: #ffffff;
+            border: 1.5px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 18px var(--primary-glow), 0 6px 16px rgba(79, 70, 229, 0.5);
+            animation: pulse-shortcut 2.5s infinite;
+        }
+
+        @keyframes pulse-shortcut {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 16px var(--primary-glow), 0 6px 16px rgba(79, 70, 229, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 24px rgba(99, 102, 241, 0.6), 0 8px 20px rgba(79, 70, 229, 0.6);
+            }
+        }
+
+        .phone-app-item.active-shortcut .phone-app-label {
+            color: #38bdf8;
+            font-weight: 700;
+        }
+
+        .shortcut-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 8.5px;
+            font-weight: 800;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid #090d16;
+        }
+
+        /* Targeted SMS Chase Notification Card */
+        .sms-chase-card {
             margin-top: auto;
-            padding-top: 14px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(30, 41, 59, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            border-radius: 14px;
+            padding: 10px 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sms-chase-card:hover {
+            border-color: var(--primary-light);
+            background: rgba(30, 41, 59, 0.95);
+            transform: translateY(-2px);
+        }
+
+        .sms-chase-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .sms-chase-top strong {
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .sms-chase-body {
+            font-size: 11.5px;
+            line-height: 1.4;
+            color: #f1f5f9;
+        }
+
+        .sms-chase-body strong {
+            color: #38bdf8;
+        }
+
+        .sms-chase-sub {
+            font-size: 9.5px;
+            color: var(--accent-teal);
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
+        }
+
+        /* Panel 2: Mobile Camera Viewfinder & Real-Time Legibility HUD */
+        .dropzone-mockup-wrapper {
+            background: #080c16;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 28px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6);
+            position: relative;
+            min-height: 480px;
+        }
+
+        .camera-view-header {
+            background: #111726;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .cam-nav-left {
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .quick-input-placeholder {
-            background: #151d30;
-            border-radius: 18px;
-            padding: 8px 14px;
-            font-size: 11px;
-            color: var(--text-muted);
-            flex-grow: 1;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        .cam-back-arrow {
+            color: #94a3b8;
+            font-size: 16px;
+            cursor: default;
         }
 
-        /* Panel 2: Magic Link Dropzone & Real-Time Legibility Rejection */
-        .dropzone-mockup-wrapper {
-            background: #0d1322;
-            border: 1px solid var(--border-subtle);
+        .cam-app-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .cam-flash-btn {
+            font-size: 10px;
+            font-weight: 600;
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .permanent-sync-badge {
+            font-size: 10.5px;
+            font-family: var(--font-mono);
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            padding: 3px 9px;
             border-radius: 20px;
             display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-            position: relative;
-        }
-
-        .browser-bar {
-            background: #151e33;
-            padding: 10px 16px;
-            display: flex;
             align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .browser-dots {
-            display: flex;
-            gap: 6px;
-        }
-
-        .b-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
-        .b-dot-1 { background: #ef4444; }
-        .b-dot-2 { background: #f59e0b; }
-        .b-dot-3 { background: #10b981; }
-
-        .browser-address {
-            background: #090d16;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 6px;
-            padding: 3px 14px;
-            font-family: var(--font-mono);
-            font-size: 11px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .lock-icon {
-            color: var(--accent-teal);
-            font-size: 10px;
+            gap: 5px;
+            font-weight: 600;
         }
 
         .dropzone-body {
-            padding: 24px;
+            padding: 14px 16px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             position: relative;
-            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.05), transparent 60%);
+            background: radial-gradient(circle at 50% 25%, rgba(99, 102, 241, 0.07), transparent 70%);
         }
 
-        .client-context-bar {
+        /* In-App Bookkeeper Request Card */
+        .requested-receipt-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.35);
+            border-radius: 12px;
+            padding: 9px 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .requested-receipt-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #6366f1, #14b8a6);
+        }
+
+        .req-pill-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            margin-bottom: 18px;
+            justify-content: space-between;
+            margin-bottom: 4px;
         }
 
-        .client-info-firm {
-            font-size: 12px;
+        .req-badge {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #818cf8;
+            background: rgba(99, 102, 241, 0.15);
+            padding: 2px 7px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .req-time {
+            font-size: 9.5px;
             color: var(--text-muted);
         }
 
-        .client-info-client {
-            font-size: 14px;
-            font-weight: 700;
-            color: #fff;
+        .req-pill-detail {
+            font-size: 12px;
+            color: #f8fafc;
+            font-weight: 600;
         }
 
-        .token-expiry-badge {
-            font-size: 11px;
+        .req-pill-detail strong {
+            color: #38bdf8;
+        }
+
+        .req-pill-detail span {
+            color: #10b981;
+        }
+
+        .req-pill-note {
+            font-size: 9.5px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Viewfinder Corner Guides */
+        .vf-corner {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-color: rgba(99, 102, 241, 0.6);
+            border-style: solid;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .vf-top-left {
+            top: 8px;
+            left: 8px;
+            border-width: 2px 0 0 2px;
+        }
+
+        .vf-top-right {
+            top: 8px;
+            right: 8px;
+            border-width: 2px 2px 0 0;
+        }
+
+        .vf-bottom-left {
+            bottom: 8px;
+            left: 8px;
+            border-width: 0 0 2px 2px;
+        }
+
+        .vf-bottom-right {
+            bottom: 8px;
+            right: 8px;
+            border-width: 0 2px 2px 0;
+        }
+
+        /* Live Edge Sharpness HUD */
+        .camera-hud-sharpness {
+            position: absolute;
+            top: 10px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(6px);
+            padding: 3px 10px;
+            border-radius: 16px;
+            font-size: 10.5px;
             font-family: var(--font-mono);
-            background: rgba(20, 184, 166, 0.1);
-            border: 1px solid rgba(20, 184, 166, 0.3);
-            color: #2dd4bf;
-            padding: 3px 8px;
-            border-radius: 6px;
+            font-weight: 600;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 15;
+            transition: all 0.3s ease;
+        }
+
+        .hud-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #f59e0b;
+        }
+
+        .camera-hud-sharpness.hud-danger {
+            border-color: rgba(239, 68, 68, 0.5);
+            color: #fca5a5;
+            background: rgba(30, 15, 20, 0.9);
+        }
+
+        .camera-hud-sharpness.hud-danger .hud-dot {
+            background: #ef4444;
+            box-shadow: 0 0 8px #ef4444;
+        }
+
+        .camera-hud-sharpness.hud-success {
+            border-color: rgba(16, 185, 129, 0.5);
+            color: #6ee7b7;
+            background: rgba(10, 30, 25, 0.9);
+        }
+
+        .camera-hud-sharpness.hud-success .hud-dot {
+            background: #10b981;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        /* Camera Bottom Control Strip */
+        .camera-bottom-strip {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8px;
+        }
+
+        .cam-tool-btn {
+            font-size: 11px;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cam-tool-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .cam-shutter-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2.5px solid #ffffff;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 14px rgba(255, 255, 255, 0.25);
+        }
+
+        .cam-shutter-btn:hover {
+            transform: scale(1.06);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .shutter-core {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #ffffff;
+            transition: all 0.15s ease;
+        }
+
+        .cam-shutter-btn:active .shutter-core {
+            transform: scale(0.85);
+            background: #818cf8;
         }
 
         /* Interactive Simulation Stage Container */
@@ -1507,12 +1746,12 @@
             </div>
 
             <h1 class="hero-headline">
-                Stop forcing clients to download apps.<br>
-                <span class="highlight-gradient">Collect receipts via secure SMS Magic Links.</span>
+                Stop forcing clients into portal apps.<br>
+                <span class="highlight-gradient">1-tap receipt dropzone right on their home screen.</span>
             </h1>
 
             <p class="hero-subtext">
-                Eliminate the end-of-month client chase and unstructured shoebox file dumps. LedgerDrop intercepts receipts at the point of spend via zero-friction SMS magic links, enforcing real-time IRS legibility checks before files touch your ledger.
+                Eliminate portal fatigue and unbilled document triage. LedgerDrop places a zero-friction, 1-tap camera dropzone directly on your client's smartphone—enforcing real-time IRS legibility checks at the point of spend, with automated SMS chase only when receipts are missing.
             </p>
 
             <div class="hero-cta-wrap">
@@ -1534,7 +1773,7 @@
             <div class="trust-checklist">
                 <div class="trust-item">
                     <span class="trust-check">✓</span>
-                    <span>Zero Client Logins or Passwords</span>
+                    <span>Zero App Store Downloads or Passwords</span>
                 </div>
                 <div class="trust-item">
                     <span class="trust-check">✓</span>
@@ -1558,7 +1797,7 @@
                             </svg>
                             The Frictionless Client Dropzone Simulation
                         </h3>
-                        <p>Watch how automated SMS collection intercepts expenses and rejects illegible receipts before reaching your firm.</p>
+                        <p>See how 1-tap home-screen access captures receipts instantly at checkout and rejects illegible photos before reaching your firm.</p>
                     </div>
 
                     <div class="sim-controller-pills">
@@ -1569,63 +1808,121 @@
                 </div>
 
                 <div class="dual-simulation-grid">
-                    <!-- Left: Simulated SMS Mobile View -->
+                    <!-- Left: Simulated Client Smartphone (Home Screen & 1-Tap Shortcut) -->
                     <div class="phone-mockup-wrapper">
                         <div class="phone-top-notch">
                             <span class="camera-lens"></span>
                         </div>
-                        <div class="phone-header">
-                            <div class="avatar-circle">LD</div>
-                            <div class="phone-contact-name">LedgerDrop Automated Intake</div>
-                            <div class="phone-contact-sub">Secure SMS Dispatch &bull; Acme Corp</div>
-                        </div>
 
-                        <div class="sms-messages-container">
-                            <div class="sms-timestamp">Today 12:41 PM</div>
-
-                            <div class="sms-bubble">
-                                Hi Sarah, please snap a quick photo of your lunch receipt from yesterday for <strong>Acme Corp</strong>:
-                                <div class="sms-link-card" id="sim-magic-link-click">
-                                    <div class="sms-link-icon">⚡</div>
-                                    <div class="sms-link-meta">
-                                        <div class="sms-link-url">ledgerdrop.io/m/8x29f</div>
-                                        <div class="sms-link-desc">1-Click Dropzone (No App Required)</div>
-                                    </div>
-                                </div>
+                        <div class="phone-status-bar">
+                            <span>9:41</span>
+                            <div class="phone-status-icons">
+                                <span>5G</span>
+                                <span>100%</span>
                             </div>
                         </div>
 
-                        <div class="phone-quick-reply">
-                            <div class="quick-input-placeholder">Tap magic link to upload receipt...</div>
+                        <div class="homescreen-header">
+                            <div class="homescreen-time">9:41</div>
+                            <div class="homescreen-date">Tuesday, October 14 &bull; Acme Corp</div>
+                        </div>
+
+                        <div class="homescreen-grid">
+                            <!-- 1-Tap LedgerDrop PWA Shortcut -->
+                            <div class="phone-app-item active-shortcut" id="sim-magic-link-click" title="Tap to simulate 1-click receipt camera launch">
+                                <div class="phone-app-icon">
+                                    ⚡
+                                    <span class="shortcut-badge">1</span>
+                                </div>
+                                <span class="phone-app-label">Drop Receipt</span>
+                            </div>
+
+                            <!-- Standard Client Apps for Realism -->
+                            <div class="phone-app-item">
+                                <div class="phone-app-icon" style="background:#1e3a8a; color:#60a5fa;">📷</div>
+                                <span class="phone-app-label">Camera</span>
+                            </div>
+                            <div class="phone-app-item">
+                                <div class="phone-app-icon" style="background:#065f46; color:#34d399;">✉️</div>
+                                <span class="phone-app-label">Mail</span>
+                            </div>
+                            <div class="phone-app-item">
+                                <div class="phone-app-icon" style="background:#374151; color:#9ca3af;">🗺️</div>
+                                <span class="phone-app-label">Maps</span>
+                            </div>
+                            <div class="phone-app-item">
+                                <div class="phone-app-icon" style="background:#1f2937; color:#9ca3af;">📁</div>
+                                <span class="phone-app-label">Files</span>
+                            </div>
+                            <div class="phone-app-item">
+                                <div class="phone-app-icon" style="background:#78350f; color:#f59e0b;">📝</div>
+                                <span class="phone-app-label">Notes</span>
+                            </div>
+                            <div class="phone-app-item">
+                                <div class="phone-app-icon" style="background:#4c1d95; color:#a78bfa;">💬</div>
+                                <span class="phone-app-label">Messages</span>
+                            </div>
+                            <div class="phone-app-item">
+                                <div class="phone-app-icon" style="background:#111827; color:#6b7280;">⚙️</div>
+                                <span class="phone-app-label">Settings</span>
+                            </div>
+                        </div>
+
+                        <!-- Targeted SMS Chase Fallback Card -->
+                        <div class="sms-chase-card" id="sim-sms-chase-trigger" title="Automated SMS sent only for missing receipts">
+                            <div class="sms-chase-top">
+                                <strong><span>💬</span> Messages &bull; Just now</strong>
+                                <span>Alert</span>
+                            </div>
+                            <div class="sms-chase-body">
+                                <strong>LedgerDrop:</strong> Missing receipt for $148.20 at Home Depot on Oct 14. Tap icon to drop.
+                            </div>
+                            <div class="sms-chase-sub">
+                                <span>⚡</span> Automated SMS chase only when receipts are missing
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Right: Magic Link Dropzone & Real-Time Legibility Rejection -->
+                    <!-- Right: Mobile Camera Viewfinder & Real-Time Legibility HUD -->
                     <div class="dropzone-mockup-wrapper">
-                        <div class="browser-bar">
-                            <div class="browser-dots">
-                                <span class="b-dot b-dot-1"></span>
-                                <span class="b-dot b-dot-2"></span>
-                                <span class="b-dot b-dot-3"></span>
+                        <div class="camera-view-header">
+                            <div class="cam-nav-left">
+                                <span class="cam-back-arrow">‹</span>
+                                <span class="cam-app-title">Drop Receipt</span>
+                                <span class="cam-flash-btn">⚡ Flash Auto</span>
                             </div>
-                            <div class="browser-address">
-                                <span class="lock-icon">🔒</span>
-                                <span>ledgerdrop.io/m/8x29f</span>
+                            <div class="permanent-sync-badge">
+                                <span class="live-dot"></span> Cloud Sync Active
                             </div>
-                            <span style="font-size:11px; color:var(--text-muted);">256-Bit SSL</span>
                         </div>
 
                         <div class="dropzone-body">
-                            <div class="client-context-bar">
-                                <div>
-                                    <div class="client-info-firm">Prepared for Pinnacle Bookkeeping</div>
-                                    <div class="client-info-client">Acme Corp &bull; October Intake</div>
+                            <!-- In-App Bookkeeper Request Card -->
+                            <div class="requested-receipt-card" id="sim-request-pill">
+                                <div class="req-pill-header">
+                                    <span class="req-badge">📩 BOOKKEEPER REQUEST #104</span>
+                                    <span class="req-time">Pending &bull; Oct 14</span>
                                 </div>
-                                <span class="token-expiry-badge">Expires in 23h 59m</span>
+                                <div class="req-pill-detail">
+                                    <strong>Home Depot</strong> &bull; <span>$148.20</span> &bull; <em>Business Supplies</em>
+                                </div>
+                                <div class="req-pill-note">Auto-attaches to transaction upon capture</div>
                             </div>
 
-                            <!-- Interactive Stage Container -->
+                            <!-- Camera Viewfinder Stage Container -->
                             <div class="stage-box" id="sim-stage-box">
+                                <!-- Viewfinder Corner Reticles -->
+                                <div class="vf-corner vf-top-left"></div>
+                                <div class="vf-corner vf-top-right"></div>
+                                <div class="vf-corner vf-bottom-left"></div>
+                                <div class="vf-corner vf-bottom-right"></div>
+
+                                <!-- Real-Time Sharpness HUD Pill -->
+                                <div class="camera-hud-sharpness" id="hud-sharpness">
+                                    <span class="hud-dot"></span>
+                                    <span id="hud-sharpness-text">Sharpness: Scanning...</span>
+                                </div>
+
                                 <div class="scanner-beam" id="sim-scanner-beam"></div>
 
                                 <!-- Receipt Visual -->
@@ -1656,14 +1953,13 @@
                                 </div>
                             </div>
 
-                            <!-- Stage Action Controls -->
-                            <div class="mockup-actions-strip">
-                                <span style="font-size:12px; color:var(--text-muted);" id="sim-status-label">
-                                    Simulating: Real-Time Client Upload
-                                </span>
-                                <span class="sim-live-indicator">
-                                    <span class="live-dot"></span> Live Interactive Dropzone
-                                </span>
+                            <!-- Camera Bottom Controls -->
+                            <div class="camera-bottom-controls">
+                                <div class="cam-tool-btn" id="sim-retake-btn" title="Retake Photo">🔄 Retake</div>
+                                <div class="cam-shutter-btn" id="sim-shutter-btn" title="Tap to capture receipt">
+                                    <div class="shutter-core"></div>
+                                </div>
+                                <span class="cam-hud-subtext" id="sim-status-label">Simulating: Real-Time Edge Quality Check</span>
                             </div>
                         </div>
                     </div>
@@ -1676,18 +1972,18 @@
             <div class="section-header">
                 <span class="section-badge">Built for Modern Bookkeepers</span>
                 <h2 class="section-title">The Active Collection Layer</h2>
-                <p class="section-desc">Why boutique firms are replacing portal logins and WhatsApp threads with automated SMS magic links.</p>
+                <p class="section-desc">Why boutique firms are replacing portal logins and WhatsApp threads with 1-tap home-screen dropzones.</p>
             </div>
 
             <div class="pillars-grid">
                 <div class="pillar-card">
-                    <div class="pillar-icon-box">💬</div>
-                    <h3 class="pillar-heading">Zero App Friction</h3>
+                    <div class="pillar-icon-box">📱</div>
+                    <h3 class="pillar-heading">1-Tap Home-Screen Shortcut</h3>
                     <p class="pillar-body">
-                        Eliminate portal fatigue, forgotten login credentials, and app store downloads. LedgerDrop delivers secure, single-use magic links directly via SMS—allowing clients to snap and submit receipts in under 10 seconds.
+                        No App Store friction, no forgotten passwords. Clients save a dedicated, secure 1-tap dropzone directly to their mobile home screen—launching the camera in under 1 second with zero recurring carrier fees for your firm.
                     </p>
                     <div class="pillar-metric">
-                        <span>⚡ Zero client login &bull; 1-tap photo upload</span>
+                        <span>⚡ Zero App Store friction &bull; 1-second camera launch</span>
                     </div>
                 </div>
 
@@ -1826,7 +2122,7 @@
 
     <!-- 7. Footer -->
     <footer>
-        <p>&copy; 2026 LedgerDrop. All rights reserved. Built for boutique bookkeeping firms seeking active collection.</p>
+        <p>&copy; 2026 LedgerDrop. All rights reserved. Built for boutique bookkeeping firms seeking zero-friction intake.</p>
     </footer>
 
     <!-- 8. Preserved Webhook Logic & Interactive Simulation Scripts -->
@@ -2036,7 +2332,7 @@
         }
 
         // ==========================================
-        // DUAL SIMULATION CONTROLLER (SMS & BLUR REJECTION)
+        // DUAL SIMULATION CONTROLLER (PWA & CAMERA HUD)
         // ==========================================
         const stageBox = document.getElementById('sim-stage-box');
         const scannerBeam = document.getElementById('sim-scanner-beam');
@@ -2044,10 +2340,14 @@
         const rejectionBanner = document.getElementById('sim-rejection-banner');
         const successBanner = document.getElementById('sim-success-banner');
         const statusLabel = document.getElementById('sim-status-label');
+        const hudSharpness = document.getElementById('hud-sharpness');
+        const hudSharpnessText = document.getElementById('hud-sharpness-text');
         const modeAutoBtn = document.getElementById('mode-auto-btn');
         const modeBlurBtn = document.getElementById('mode-blur-btn');
         const modeClearBtn = document.getElementById('mode-clear-btn');
         const heroDemoTrigger = document.getElementById('hero-demo-trigger');
+        const simShutterBtn = document.getElementById('sim-shutter-btn');
+        const simRetakeBtn = document.getElementById('sim-retake-btn');
 
         let simInterval = null;
         let isAutoLoop = true;
@@ -2059,15 +2359,19 @@
             if (scannerBeam) scannerBeam.classList.add('active');
             if (rejectionBanner) rejectionBanner.style.display = 'none';
             if (successBanner) successBanner.style.display = 'none';
+            if (hudSharpness) hudSharpness.className = 'camera-hud-sharpness';
+            if (hudSharpnessText) hudSharpnessText.innerText = 'Sharpness: Scanning...';
             if (receiptCard) {
                 receiptCard.className = 'receipt-preview-card blurred-photo';
                 receiptCard.style.transform = 'scale(0.95)';
             }
-            if (statusLabel) statusLabel.innerText = 'Client uploaded photo. Scanning sharpness...';
+            if (statusLabel) statusLabel.innerText = 'Client snapping receipt. Analyzing camera focus...';
 
             setTimeout(() => {
                 if (scannerBeam) scannerBeam.classList.remove('active');
                 if (stageBox) stageBox.className = 'stage-box state-rejected';
+                if (hudSharpness) hudSharpness.className = 'camera-hud-sharpness hud-danger';
+                if (hudSharpnessText) hudSharpnessText.innerText = 'Sharpness: 22% (Blurry • Fails IRS)';
                 if (rejectionBanner) rejectionBanner.style.display = 'block';
                 if (statusLabel) statusLabel.innerText = 'Action: Rejected. Client prompted to retake.';
             }, 1400);
@@ -2080,17 +2384,21 @@
             if (scannerBeam) scannerBeam.classList.add('active');
             if (rejectionBanner) rejectionBanner.style.display = 'none';
             if (successBanner) successBanner.style.display = 'none';
+            if (hudSharpness) hudSharpness.className = 'camera-hud-sharpness';
+            if (hudSharpnessText) hudSharpnessText.innerText = 'Sharpness: Analyzing focus...';
             if (receiptCard) {
                 receiptCard.className = 'receipt-preview-card sharp-photo';
                 receiptCard.style.transform = 'scale(1)';
             }
-            if (statusLabel) statusLabel.innerText = 'Client re-taking photo. Analyzing compliance...';
+            if (statusLabel) statusLabel.innerText = 'Client retaking photo. Verifying compliance...';
 
             setTimeout(() => {
                 if (scannerBeam) scannerBeam.classList.remove('active');
                 if (stageBox) stageBox.className = 'stage-box state-passed';
+                if (hudSharpness) hudSharpness.className = 'camera-hud-sharpness hud-success';
+                if (hudSharpnessText) hudSharpnessText.innerText = 'Sharpness: 94% (IRS Compliant ✓)';
                 if (successBanner) successBanner.style.display = 'block';
-                if (statusLabel) statusLabel.innerText = 'Verified IRS compliant! Extracted & routed to general ledger.';
+                if (statusLabel) statusLabel.innerText = 'Verified compliant! Attached to Home Depot request & synced.';
             }, 1400);
         }
 
@@ -2141,6 +2449,7 @@
                 runCompliantSimulation();
             });
         }
+
         if (heroDemoTrigger) heroDemoTrigger.addEventListener('click', () => {
             const showcaseEl = document.querySelector('.showcase-section');
             if (showcaseEl) showcaseEl.scrollIntoView({ behavior: 'smooth' });
@@ -2148,17 +2457,29 @@
         });
 
         const simMagicLink = document.getElementById('sim-magic-link-click');
-        if (simMagicLink) {
-            simMagicLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                isAutoLoop = false;
-                stopAutoSimulation();
-                if (modeAutoBtn) modeAutoBtn.classList.remove('active');
-                if (modeBlurBtn) modeBlurBtn.classList.add('active');
-                if (modeClearBtn) modeClearBtn.classList.remove('active');
-                runBlurRejectionSimulation();
-            });
+        const simSmsChase = document.getElementById('sim-sms-chase-trigger');
+        
+        function handleShortcutClick(e) {
+            if (e) e.preventDefault();
+            isAutoLoop = false;
+            stopAutoSimulation();
+            if (modeAutoBtn) modeAutoBtn.classList.remove('active');
+            if (modeBlurBtn) modeBlurBtn.classList.add('active');
+            if (modeClearBtn) modeClearBtn.classList.remove('active');
+            runBlurRejectionSimulation();
         }
+
+        if (simMagicLink) simMagicLink.addEventListener('click', handleShortcutClick);
+        if (simSmsChase) simSmsChase.addEventListener('click', handleShortcutClick);
+        if (simShutterBtn) simShutterBtn.addEventListener('click', handleShortcutClick);
+        if (simRetakeBtn) simRetakeBtn.addEventListener('click', () => {
+            isAutoLoop = false;
+            stopAutoSimulation();
+            if (modeAutoBtn) modeAutoBtn.classList.remove('active');
+            if (modeBlurBtn) modeBlurBtn.classList.remove('active');
+            if (modeClearBtn) modeClearBtn.classList.add('active');
+            runCompliantSimulation();
+        });
 
         // Initialize simulation on load
         startAutoSimulation();
